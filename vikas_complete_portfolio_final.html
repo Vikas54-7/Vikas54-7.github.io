@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vikas Pabba | Senior Software Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            font-weight: 700;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-links a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: -40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .about-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .skill-category {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+
+        .skill-category h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .skill-category ul {
+            list-style: none;
+        }
+
+        .skill-category li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .skill-category li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+        }
+
+        .project-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .project-tech {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .project-dataset {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 3px solid #764ba2;
+        }
+
+        .experience-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .experience-title {
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .experience-date {
+            color: #764ba2;
+            font-weight: 600;
+        }
+
+        .experience-company {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .experience-item ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .experience-item li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+        }
+
+        .contact-info h2 {
+            color: white;
+            border-bottom: 3px solid white;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .contact-links a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .github-link:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1.1em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .experience-header {
+                flex-direction: column;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="profile-img">VP</div>
+            <h1>Vikas Pabba</h1>
+            <p class="tagline">Senior Software Engineer | Big Data & Distributed Systems Specialist</p>
+            <div class="social-links">
+                <a href="https://github.com/Vikas54-7" target="_blank">GitHub</a>
+                <a href="https://www.linkedin.com/in/pabbavikas/" target="_blank">LinkedIn</a>
+                <a href="mailto:pabba.vikas54@gmail.com">Email</a>
+                <a href="tel:2108737446">210-873-7446</a>
+            </div>
+        </header>
+
+        <div class="content">
+            <section id="about">
+                <h2>About Me</h2>
+                <p class="about-text">
+                    I'm a Senior Software Engineer with 4+ years of experience specializing in big data technologies and distributed systems. I architect and build scalable data pipelines that process millions of records daily using Apache Spark, Apache Airflow, and modern cloud platforms.
+                    <br><br>
+                    My expertise spans the entire data engineering stack - from designing robust ETL pipelines and implementing real-time streaming architectures to deploying ML models in production. I've successfully delivered enterprise-scale solutions on AWS, GCP, and Azure, consistently achieving 99.9%+ uptime while optimizing performance and reducing costs by up to 35%.
+                    <br><br>
+                    I'm passionate about solving complex data challenges and building systems that can handle massive scale. When I'm not coding, you'll find me exploring new technologies, contributing to open-source projects, or mentoring aspiring data engineers.
+                </p>
+            </section>
+
+            <section id="skills">
+                <h2>Technical Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3>Big Data & Streaming</h3>
+                        <ul>
+                            <li>Apache Spark (PySpark, Scala)</li>
+                            <li>Apache Kafka</li>
+                            <li>Apache Airflow</li>
+                            <li>Apache Druid</li>
+                            <li>Hadoop</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>Databases & Query Engines</h3>
+                        <ul>
+                            <li>Trino</li>
+                            <li>StarRocks</li>
+                            <li>BigQuery</li>
+                            <li>PostgreSQL</li>
+                            <li>Delta Lake</li>
+                            <li>Redis</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>Cloud Platforms</h3>
+                        <ul>
+                            <li>AWS (EMR, S3, Glue, Lambda)</li>
+                            <li>GCP (Dataproc, BigQuery)</li>
+                            <li>Azure (Databricks, Event Hubs)</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>Backend & APIs</h3>
+                        <ul>
+                            <li>Spring Boot</li>
+                            <li>RESTful APIs</li>
+                            <li>Microservices</li>
+                            <li>OAuth2</li>
+                            <li>Resilience4j</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>DevOps & Tools</h3>
+                        <ul>
+                            <li>Docker & Kubernetes</li>
+                            <li>Terraform</li>
+                            <li>CI/CD (GitHub Actions)</li>
+                            <li>Prometheus & Grafana</li>
+                            <li>ELK Stack</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>Languages</h3>
+                        <ul>
+                            <li>Python</li>
+                            <li>Scala</li>
+                            <li>Java</li>
+                            <li>SQL</li>
+                            <li>HCL (Terraform)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="experience">
+                <h2>Professional Experience</h2>
+                
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Software Engineer</div>
+                            <div class="experience-company">Websol.ai | San Antonio, TX</div>
+                        </div>
+                        <div class="experience-date">Aug 2024 – Present</div>
+                    </div>
+                    <ul>
+                        <li>Architected production data pipelines using Apache Spark (Scala/PySpark) on AWS EMR processing 50K+ daily records with sub-2-minute latency and 99.9% uptime</li>
+                        <li>Built RESTful APIs with Spring Boot serving 10K+ requests/day with p99 latency <200ms applying SOLID principles and Resilience4j circuit breakers</li>
+                        <li>Implemented real-time streaming with Apache Kafka (3 brokers, 12 partitions) and Apache Airflow orchestration with exactly-once semantics</li>
+                        <li>Optimized Trino, StarRocks, and PostgreSQL queries by 60% through indexing strategies, query rewriting, and partition pruning</li>
+                        <li>Developed automated data quality frameworks ensuring 98%+ accuracy with anomaly detection and alerting</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Graduate Research Assistant</div>
+                            <div class="experience-company">Texas A&M University - Kingsville | TX</div>
+                        </div>
+                        <div class="experience-date">Aug 2023 – May 2025</div>
+                    </div>
+                    <ul>
+                        <li>Completed M.S. in Computer Science (GPA: 3.7/4.0) with specialization in Big Data Analytics and Distributed Systems</li>
+                        <li>Conducted research on distributed data processing optimization using Apache Spark, achieving 70% query performance improvement</li>
+                        <li>Built production projects on AWS, GCP, and Azure with Apache Airflow DAGs (88+ tasks), Kafka streaming, and Kubernetes auto-scaling</li>
+                        <li>Implemented Apache Druid and Trino for real-time OLAP and federated queries achieving <100ms query latency</li>
+                        <li>Achieved 85%+ test coverage with comprehensive testing using ScalaTest and unit testing frameworks</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Data Engineer</div>
+                            <div class="experience-company">HCL Technologies (USAA Client) | Chennai, India</div>
+                        </div>
+                        <div class="experience-date">Jul 2021 – Jul 2023</div>
+                    </div>
+                    <ul>
+                        <li>Designed and deployed 10+ enterprise-scale ETL pipelines using IBM DataStage and Apache Spark for Fortune 150 banking operations</li>
+                        <li>Led migration of 3M+ banking records from legacy mainframe systems with zero data loss and full regulatory compliance</li>
+                        <li>Implemented CDC-based real-time replication with HVR, reducing data sync time from hours to minutes</li>
+                        <li>Optimized batch processing jobs by 45% through parallel processing patterns and Spark tuning</li>
+                        <li>Built PySpark transformations on Hadoop clusters processing 1TB+ daily volumes with distributed computing patterns</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="projects">
+                <h2>Featured Projects</h2>
+
+                <div class="project-card">
+                    <h3>IoT Smart City Data Lake & Analytics Platform</h3>
+                    <p class="project-tech">Tech Stack: PySpark, Apache Airflow, Apache Druid, Trino, BigQuery, Azure Databricks, Azure Event Hubs, GCP Dataproc, Delta Lake, Spring Boot, Spark MLlib, Redis, Prometheus, Grafana, ELK Stack, Terraform, OAuth2, Swagger</p>
+                    <div class="project-dataset">
+                        <strong>Dataset:</strong> EPA Vehicle Fuel Economy + NHTSA Vehicle Safety Dataset<br>
+                        <strong>Records:</strong> 500K+ vehicles with 100+ attributes (fuel consumption, emissions, safety ratings, specifications)<br>
+                        <strong>Data Sources:</strong> www.fueleconomy.gov/feg/download.shtml | www.nhtsa.gov/nhtsa-datasets-and-apis
+                    </div>
+                    <p>
+                        Developed production-grade IoT data platform processing <strong>2M+ vehicle telemetry events daily</strong> using PySpark on Azure Databricks (Standard_DS14_v2) and GCP Dataproc. Implemented medallion architecture (bronze/silver/gold layers) with Delta Lake for ACID transactions, time travel capabilities, and schema evolution. Bronze layer ingests raw data, silver layer performs cleansing and deduplication, gold layer provides aggregated analytics-ready datasets.
+                        <br><br>
+                        Built comprehensive Apache Airflow orchestration managing <strong>88 interdependent tasks</strong> including data ingestion from Azure Event Hubs (10 partitions, 1MB/sec throughput), Spark transformations with <strong>custom UDFs (10+ functions)</strong>, and loading to Apache Druid for real-time dashboards. Implemented Trino cluster (1 coordinator, 5 workers) for federated queries across Azure Blob Storage, GCP BigQuery, and PostgreSQL databases, enabling unified analytics layer with single query interface. Created predictive maintenance ML models using Spark MLlib (Random Forest, Gradient Boosting) with feature engineering pipeline achieving <strong>92% accuracy</strong> for component failure prediction.
+                        <br><br>
+                        Designed REST APIs using Spring Boot with <strong>OAuth2 authentication</strong>, rate limiting (100 req/min per user), and comprehensive API documentation using Swagger/OpenAPI. Implemented <strong>Redis caching layer reducing database load by 60%</strong>. Deployed infrastructure-as-code using Terraform across multi-cloud environments (Azure + GCP) with automated cost optimization achieving <strong>35% reduction in cloud spend</strong>. Monitoring stack includes <strong>Prometheus for metrics, Grafana for visualization, and ELK stack for centralized logging</strong>. Apache Druid enables <strong><100ms OLAP query latency</strong>.
+                    </p>
+                    <a href="https://github.com/Vikas54-7/iot-smart-city-platform" target="_blank" class="github-link">→ View on GitHub</a>
+                </div>
+
+                <div class="project-card">
+                    <h3>E-Commerce Real-Time Fraud Detection Pipeline</h3>
+                    <p class="project-tech">Tech Stack: Spark Structured Streaming (Scala), Apache Kafka, Apache Airflow, StarRocks, Spring Boot, AWS EMR, Azure Databricks, Docker, Kubernetes, Helm, Resilience4j</p>
+                    <div class="project-dataset">
+                        <strong>Dataset:</strong> Amazon Customer Behavior & Brazilian E-Commerce Dataset (Kaggle)<br>
+                        <strong>Records:</strong> 500K+ transactions with 25+ features (purchase history, session data, device fingerprints, payment methods)<br>
+                        <strong>Data Source:</strong> www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+                    </div>
+                    <p>
+                        Architected multi-cloud fraud detection system processing <strong>100K+ transactions per hour</strong> using Scala and Spark Structured Streaming on AWS EMR (r5.4xlarge instances) and Azure Databricks (Standard_DS14_v2). Implemented Apache Kafka cluster with 3 brokers and 12 partitions for event streaming, achieving exactly-once semantics with idempotent producers. Integrated StarRocks (3-node cluster) for real-time OLAP analytics with materialized views, reducing query latency from <strong>8 seconds to 200ms</strong>.
+                        <br><br>
+                        Built Apache Airflow DAGs for batch model retraining (daily), feature engineering pipelines (hourly), and automated anomaly detection workflows. Designed Spring Boot microservices architecture following <strong>SOLID principles</strong> with circuit breakers using Resilience4j, serving <strong>50K+ API requests/day</strong>. Implemented multi-layer fraud scoring algorithm combining rule-based detection and ML models (Random Forest, XGBoost) achieving <strong>94% precision and 87% recall</strong>. Deployed on Kubernetes using Helm charts with Horizontal Pod Autoscaler (HPA) for auto-scaling based on CPU and custom metrics. Achieved <strong>85%+ code coverage</strong> with comprehensive unit and integration tests. Infrastructure managed with Terraform for consistent deployments across AWS and Azure.
+                    </p>
+                    <a href="https://github.com/Vikas54-7/ecommerce-fraud-detection" target="_blank" class="github-link">→ View on GitHub</a>
+                </div>
+
+                <div class="project-card">
+                    <h3>NYC Taxi Analytics Platform - Real-Time Stream Processing</h3>
+                    <p class="project-tech">Tech Stack: PySpark, Apache Kafka, Apache Airflow, Apache Druid, Trino, BigQuery, Spring Boot, GCP Dataproc, Cloud Composer, Docker, Kubernetes, Terraform, Looker</p>
+                    <div class="project-dataset">
+                        <strong>Dataset:</strong> NYC TLC Trip Records - 1.1 Billion+ taxi trips from BigQuery Public Dataset (bigquery-public-data:new_york_taxi_trips)<br>
+                        <strong>Data Source:</strong> NYC Taxi & Limousine Commission official open data | <strong>Size:</strong> ~400GB+ compressed
+                    </div>
+                    <p>
+                        Built enterprise-scale real-time analytics platform processing <strong>3M+ NYC taxi trips daily</strong> using Apache Spark on GCP Dataproc clusters (10 worker nodes, 128GB RAM each). Implemented Apache Kafka cluster (3 brokers, 24 partitions) for streaming ingestion from NYC TLC API with exactly-once semantics. Deployed Apache Druid for sub-second OLAP queries achieving <strong>95th percentile latency <100ms</strong> on 500M+ historical records. Utilized Trino for federated queries across BigQuery (trip data), AWS S3 (weather data), and Cloud Storage (geolocation data).
+                        <br><br>
+                        Orchestrated <strong>50+ daily workflows</strong> using Cloud Composer (managed Apache Airflow) with complex DAGs including sensor tasks, dynamic task generation, and cross-DAG dependencies. Built Spring Boot microservices deployed on GKE serving REST APIs for fare predictions and trip analytics with <strong>99.95% uptime</strong>. Implemented auto-scaling with HPA (3-25 pod replicas based on CPU/RPS metrics). Integrated data quality framework using Great Expectations, identifying and correcting 2.3M+ anomalous records (missing coordinates, invalid fares). Infrastructure deployed using Terraform with multi-environment setup (dev/staging/prod). Created Looker dashboards for business intelligence with 15+ real-time visualizations tracking KPIs.
+                    </p>
+                    <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" target="_blank" class="github-link">→ View on GitHub</a>
+                </div>
+            </section>
+
+            <section id="education">
+                <h2>Education</h2>
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">M.S. in Computer and Information Sciences</div>
+                            <div class="experience-company">Texas A&M University, Kingsville</div>
+                        </div>
+                        <div class="experience-date">Aug 2023 – May 2025 | GPA: 3.7/4.0</div>
+                    </div>
+                    <p><strong>Relevant Coursework:</strong> Advanced Database Systems, Big Data Analytics, Distributed Systems, Cloud Computing Architecture, Machine Learning</p>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">B.Tech in Electronics and Communication Engineering</div>
+                            <div class="experience-company">JNTU, India</div>
+                        </div>
+                        <div class="experience-date">Aug 2017 – May 2021</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact">
+                <div class="contact-info">
+                    <h2>Get In Touch</h2>
+                    <p style="margin: 20px 0;">I'm always interested in discussing new opportunities, exciting projects, or collaborations in big data and distributed systems.</p>
+                    <div class="contact-links">
+                        <a href="mailto:pabba.vikas54@gmail.com">📧 Email Me</a>
+                        <a href="https://www.linkedin.com/in/pabbavikas/" target="_blank">💼 LinkedIn</a>
+                        <a href="https://github.com/Vikas54-7" target="_blank">💻 GitHub</a>
+                        <a href="tel:2108737446">📞 Call Me</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
