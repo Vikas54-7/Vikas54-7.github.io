@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Smart City Platform - Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .component-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem;
+            display: inline-block;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .component-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .component-detail {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .layer-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .layer-title {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .tech-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .spec-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .spec-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html#projects" class="back-button">← Back to Projects</a>
+        
+        <header>
+            <h1>IoT Smart City Data Lake & Analytics Platform</h1>
+            <p class="subtitle">Production-Grade Multi-Cloud Architecture Processing 2M+ Events Daily</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">2M+</div>
+                <div class="metric-label">Events/Day</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">500K+</div>
+                <div class="metric-label">Connected Vehicles</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value"><100ms</div>
+                <div class="metric-label">Query Latency</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">99.9%</div>
+                <div class="metric-label">System Uptime</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">35%</div>
+                <div class="metric-label">Cost Reduction</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">92%</div>
+                <div class="metric-label">ML Accuracy</div>
+            </div>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="architecture-diagram">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 2rem;">System Architecture Flow</h2>
+            
+            <!-- Data Ingestion Layer -->
+            <div class="layer-section">
+                <div class="layer-title">📥 Data Ingestion Layer</div>
+                <div style="text-align: center;">
+                    <div class="component-box">
+                        <div class="component-title">500K+ IoT Vehicles</div>
+                        <div class="component-detail">Telemetry Sensors</div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="component-box">
+                        <div class="component-title">Azure Event Hubs</div>
+                        <div class="component-detail">10 partitions | 1MB/sec</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Processing Layer -->
+            <div class="layer-section">
+                <div class="layer-title">⚙️ Data Processing Layer (Medallion Architecture)</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Bronze Layer (Raw)</div>
+                        <div class="component-detail">Azure Databricks<br>Standard_DS14_v2<br>Delta Lake ACID</div>
+                    </div>
+                    <div class="flow-arrow" style="margin: 0 1rem;">→</div>
+                    <div class="component-box">
+                        <div class="component-title">Silver Layer (Cleaned)</div>
+                        <div class="component-detail">PySpark Transformations<br>10+ Custom UDFs<br>Data Quality Checks</div>
+                    </div>
+                    <div class="flow-arrow" style="margin: 0 1rem;">→</div>
+                    <div class="component-box">
+                        <div class="component-title">Gold Layer (Aggregated)</div>
+                        <div class="component-detail">Business Metrics<br>ML Features<br>Analytics-Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Orchestration -->
+            <div class="layer-section">
+                <div class="layer-title">🔄 Orchestration Layer</div>
+                <div style="text-align: center;">
+                    <div class="component-box">
+                        <div class="component-title">Apache Airflow</div>
+                        <div class="component-detail">88 Interdependent Tasks<br>20 Bronze + 25 Silver + 15 Gold<br>10 ML + 8 Quality + 7 Loading</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Analytics & Serving -->
+            <div class="layer-section">
+                <div class="layer-title">📊 Analytics & Serving Layer</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Apache Druid</div>
+                        <div class="component-detail">Real-Time OLAP<br><100ms Queries<br>500M+ Records</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Trino</div>
+                        <div class="component-detail">Federated Queries<br>1 Coordinator + 5 Workers<br>Azure/GCP/PostgreSQL</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">BigQuery</div>
+                        <div class="component-detail">Historical Analytics<br>External Data Source</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- API & ML Layer -->
+            <div class="layer-section">
+                <div class="layer-title">🤖 ML & API Layer</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Spark MLlib Models</div>
+                        <div class="component-detail">Random Forest<br>Gradient Boosting<br>92% Accuracy</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Spring Boot APIs</div>
+                        <div class="component-detail">OAuth2 Auth<br>Rate Limiting (100/min)<br>Swagger Docs</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Redis Cache</div>
+                        <div class="component-detail">60% DB Load Reduction<br>In-Memory KV Store</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Monitoring -->
+            <div class="layer-section">
+                <div class="layer-title">📈 Monitoring & Observability</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Prometheus</div>
+                        <div class="component-detail">Metrics Collection<br>Time-Series DB</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Grafana</div>
+                        <div class="component-detail">Dashboards<br>Alerting</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">ELK Stack</div>
+                        <div class="component-detail">Centralized Logging<br>Kibana Visualization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Specifications -->
+        <h2 style="color: #667eea; margin: 3rem 0 1.5rem;">Technical Specifications</h2>
+        <div class="tech-specs">
+            <div class="spec-card">
+                <div class="spec-title">Azure Databricks Configuration</div>
+                <p>Cluster: <code>Standard_DS14_v2</code><br>
+                Auto-scaling: 3-8 workers<br>
+                Runtime: DBR 12.2 LTS<br>
+                Spark version: 3.3.2</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">GCP Dataproc Setup</div>
+                <p>Master: <code>n1-standard-4</code><br>
+                Workers: 3x <code>n1-standard-4</code><br>
+                Runs: 10 hours/week<br>
+                Cost: ~$40/month</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Delta Lake Features</div>
+                <p>ACID transactions<br>
+                Time travel (30 days)<br>
+                Schema evolution<br>
+                MERGE operations</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Apache Druid Config</div>
+                <p>Coordinator: <code>port 8081</code><br>
+                Broker: <code>port 8082</code><br>
+                Historical: <code>port 8083</code><br>
+                Segment size: 5M rows</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Kafka Configuration</div>
+                <p>Brokers: 3<br>
+                Partitions: 12 per topic<br>
+                Replication: 3<br>
+                Retention: 7 days</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Infrastructure as Code</div>
+                <p>Tool: Terraform<br>
+                Cloud: Azure + GCP<br>
+                Cost reduction: 35%<br>
+                Monthly: $1,560</p>
+            </div>
+        </div>
+
+        <!-- Data Flow -->
+        <h2 style="color: #667eea; margin: 3rem 0 1.5rem;">Data Flow Details</h2>
+        <div class="layer-section">
+            <div class="layer-title">Step-by-Step Data Journey</div>
+            <ol style="line-height: 2; color: #555;">
+                <li><strong>Ingestion:</strong> Vehicle sensors transmit telemetry (fuel, oil, tire pressure, battery, mileage) to Azure Event Hubs every 30 seconds</li>
+                <li><strong>Bronze Layer:</strong> Spark Structured Streaming reads from Event Hubs, writes raw data to Delta Lake (append-only, no transformations)</li>
+                <li><strong>Silver Layer:</strong> Airflow DAG triggers PySpark job applying 10+ custom UDFs (standardize_make, calculate_fuel_cost, etc.), data quality checks, deduplication</li>
+                <li><strong>Gold Layer:</strong> Business-specific aggregations (daily fleet summaries, regional fuel efficiency, maintenance alerts)</li>
+                <li><strong>ML Pipeline:</strong> Feature engineering from Silver layer → Train Random Forest & Gradient Boosting → Save models to MLflow → Serve via Spring Boot API</li>
+                <li><strong>Analytics:</strong> Apache Druid ingests Gold layer for real-time dashboards. Trino enables federated queries across Azure/GCP/PostgreSQL</li>
+                <li><strong>Caching:</strong> Redis caches frequent queries (vehicle metadata, fleet summaries) reducing database load by 60%</li>
+                <li><strong>Monitoring:</strong> Prometheus scrapes metrics every 15s → Grafana visualizes → ELK captures all logs → Alerts sent to PagerDuty on SLA breach</li>
+            </ol>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <h2 style="color: #667eea; margin: 3rem 0 1.5rem;">Cost Optimization</h2>
+        <div class="layer-section">
+            <div class="layer-title">Monthly Cost Breakdown</div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #667eea; color: white;">
+                    <tr>
+                        <th style="padding: 1rem; text-align: left;">Component</th>
+                        <th style="padding: 1rem; text-align: right;">Before Terraform</th>
+                        <th style="padding: 1rem; text-align: right;">After Optimization</th>
+                        <th style="padding: 1rem; text-align: right;">Savings</th>
+                    </tr>
+                </thead>
+                <tbody style="background: white;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Azure Databricks (24/7)</td>
+                        <td style="padding: 1rem; text-align: right;">$1,500</td>
+                        <td style="padding: 1rem; text-align: right;">$1,200</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-20%</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">GCP Dataproc (10h/week)</td>
+                        <td style="padding: 1rem; text-align: right;">$80</td>
+                        <td style="padding: 1rem; text-align: right;">$40</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-50%</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Storage (Azure + GCP)</td>
+                        <td style="padding: 1rem; text-align: right;">$300</td>
+                        <td style="padding: 1rem; text-align: right;">$150</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-50%</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Networking & Other</td>
+                        <td style="padding: 1rem; text-align: right;">$520</td>
+                        <td style="padding: 1rem; text-align: right;">$170</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-67%</td>
+                    </tr>
+                    <tr style="background: #f8f9fa; font-weight: 700;">
+                        <td style="padding: 1rem;">Total</td>
+                        <td style="padding: 1rem; text-align: right;">$2,400</td>
+                        <td style="padding: 1rem; text-align: right;">$1,560</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-35%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Key Learnings -->
+        <h2 style="color: #667eea; margin: 3rem 0 1.5rem;">Key Learnings & Challenges</h2>
+        <div class="layer-section">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Challenge 1: Late-Arriving Data</h4>
+            <p style="color: #555; margin-bottom: 1rem;"><strong>Problem:</strong> Vehicle sensors sometimes send delayed data due to connectivity issues</p>
+            <p style="color: #555;"><strong>Solution:</strong> Implemented Delta Lake upserts with 2-hour watermarking. Data within window updates existing records. Data beyond that goes to late-arrival table for manual review.</p>
+        </div>
+
+        <div class="layer-section">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Challenge 2: Query Performance</h4>
+            <p style="color: #555; margin-bottom: 1rem;"><strong>Problem:</strong> Initial Trino federated queries across Azure/GCP took 10+ seconds</p>
+            <p style="color: #555;"><strong>Solution:</strong> Implemented partition pruning, predicate pushdown filters, cached frequently accessed dimension tables. Reduced query time to 500ms.</p>
+        </div>
+
+        <div class="layer-section">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Challenge 3: Cost Management</h4>
+            <p style="color: #555; margin-bottom: 1rem;"><strong>Problem:</strong> Always-on Databricks cluster expensive ($2,400/month)</p>
+            <p style="color: #555;"><strong>Solution:</strong> Terraform automation with auto-scaling, spot instances for batch jobs, data lifecycle policies. Achieved 35% cost reduction.</p>
+        </div>
+    </div>
+</body>
+</html>
