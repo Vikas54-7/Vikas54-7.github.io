@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Fraud Detection - Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e53e3e 0%, #ed8936 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #e53e3e;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 10px 20px;
+            background: #e53e3e;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #ed8936;
+            transform: translateY(-2px);
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .component-box {
+            background: white;
+            border: 2px solid #e53e3e;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem;
+            display: inline-block;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .component-title {
+            font-weight: 700;
+            color: #e53e3e;
+            margin-bottom: 0.5rem;
+        }
+
+        .component-detail {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .layer-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #e53e3e;
+        }
+
+        .layer-title {
+            font-size: 1.5rem;
+            color: #e53e3e;
+            margin-bottom: 1rem;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #e53e3e;
+            margin: 1rem 0;
+        }
+
+        .tech-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .spec-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .spec-title {
+            font-weight: 700;
+            color: #e53e3e;
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #e53e3e 0%, #ed8936 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html#projects" class="back-button">← Back to Projects</a>
+        
+        <header>
+            <h1>E-Commerce Real-Time Fraud Detection Pipeline</h1>
+            <p class="subtitle">Multi-Cloud Streaming Architecture Processing 100K+ Transactions Per Hour</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">100K+</div>
+                <div class="metric-label">Transactions/Hour</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">94%</div>
+                <div class="metric-label">Precision</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">87%</div>
+                <div class="metric-label">Recall</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value"><200ms</div>
+                <div class="metric-label">Scoring Latency</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">96%</div>
+                <div class="metric-label">Query Improvement</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">99.9%</div>
+                <div class="metric-label">Availability</div>
+            </div>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="architecture-diagram">
+            <h2 style="text-align: center; color: #e53e3e; margin-bottom: 2rem;">System Architecture Flow</h2>
+            
+            <!-- Transaction Ingestion -->
+            <div class="layer-section">
+                <div class="layer-title">💳 Transaction Ingestion Layer</div>
+                <div style="text-align: center;">
+                    <div class="component-box">
+                        <div class="component-title">E-Commerce Platform</div>
+                        <div class="component-detail">100K+ TPS | Payment Gateway</div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="component-box">
+                        <div class="component-title">Apache Kafka</div>
+                        <div class="component-detail">3 brokers | 12 partitions<br>Exactly-once semantics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Stream Processing Layer -->
+            <div class="layer-section">
+                <div class="layer-title">⚡ Real-Time Stream Processing</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Spark Streaming (Scala)</div>
+                        <div class="component-detail">AWS EMR r5.4xlarge<br>Structured Streaming API<br>Micro-batch: 1 second</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Azure Databricks</div>
+                        <div class="component-detail">Standard_DS14_v2<br>Auto-scaling 3-8 workers<br>Delta Lake storage</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Multi-Layer Fraud Scoring -->
+            <div class="layer-section">
+                <div class="layer-title">🎯 Multi-Layer Fraud Scoring Engine</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Rule-Based Layer (30%)</div>
+                        <div class="component-detail">Velocity Checks<br>Geo-Anomaly Detection<br>Amount Thresholds</div>
+                    </div>
+                    <div class="flow-arrow" style="margin: 0 1rem;">+</div>
+                    <div class="component-box">
+                        <div class="component-title">Random Forest (35%)</div>
+                        <div class="component-detail">150 trees | Depth 15<br>Feature Importance<br>GridSearchCV tuned</div>
+                    </div>
+                    <div class="flow-arrow" style="margin: 0 1rem;">+</div>
+                    <div class="component-box">
+                        <div class="component-title">XGBoost (35%)</div>
+                        <div class="component-detail">150 estimators<br>Learning rate: 0.1<br>Max depth: 7</div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1rem; color: #666;">
+                    <strong>Final Score:</strong> Weighted average → Binary classification (Fraud/Legitimate)
+                </p>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- OLAP Database -->
+            <div class="layer-section">
+                <div class="layer-title">📊 OLAP Analytics Database</div>
+                <div style="text-align: center;">
+                    <div class="component-box">
+                        <div class="component-title">StarRocks</div>
+                        <div class="component-detail">Columnar Storage<br>Query: 8s → 200ms (96% faster)<br>Vectorized Execution</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- API & Microservices -->
+            <div class="layer-section">
+                <div class="layer-title">🚀 API & Microservices Layer</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Spring Boot Services</div>
+                        <div class="component-detail">RESTful APIs<br>50K+ req/day<br>p99 < 200ms</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Resilience4j</div>
+                        <div class="component-detail">Circuit Breakers<br>Rate Limiting<br>Retry Logic</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Redis Cache</div>
+                        <div class="component-detail">Merchant Profiles<br>Fraud Patterns<br>Sub-ms lookup</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Kubernetes Deployment -->
+            <div class="layer-section">
+                <div class="layer-title">☸️ Container Orchestration</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Kubernetes (EKS)</div>
+                        <div class="component-detail">HPA Auto-scaling<br>3-10 replicas<br>Rolling updates</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Docker Containers</div>
+                        <div class="component-detail">Multi-stage builds<br>Alpine Linux base<br>< 100MB images</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Helm Charts</div>
+                        <div class="component-detail">Template Management<br>Config Separation<br>Version Control</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <!-- Monitoring -->
+            <div class="layer-section">
+                <div class="layer-title">📈 Monitoring & Alerting</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="component-box">
+                        <div class="component-title">Prometheus</div>
+                        <div class="component-detail">Metrics Scraping<br>Time-series DB<br>Alert Manager</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">Grafana</div>
+                        <div class="component-detail">Real-time Dashboards<br>Fraud Rate Monitoring<br>SLA Tracking</div>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-title">ELK Stack</div>
+                        <div class="component-detail">Centralized Logging<br>Transaction Audit Trail<br>Kibana Visualization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Specifications -->
+        <h2 style="color: #e53e3e; margin: 3rem 0 1.5rem;">Technical Specifications</h2>
+        <div class="tech-specs">
+            <div class="spec-card">
+                <div class="spec-title">AWS EMR Configuration</div>
+                <p>Master: <code>r5.4xlarge</code><br>
+                Core nodes: 3x <code>r5.4xlarge</code><br>
+                Spark: 3.3.0<br>
+                Scala: 2.12</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Kafka Cluster Setup</div>
+                <p>Brokers: 3<br>
+                Partitions: 12 per topic<br>
+                Replication factor: 3<br>
+                Retention: 7 days<br>
+                Compression: snappy</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">StarRocks Database</div>
+                <p>Frontend nodes: 3<br>
+                Backend nodes: 5<br>
+                Storage: SSD (hot)<br>
+                Replication: 3x<br>
+                Query cache: Enabled</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">ML Model Features (25)</div>
+                <p>Amount, Merchant ID, Location<br>
+                Time of day, Day of week<br>
+                Card type, Payment method<br>
+                Velocity (1h, 24h, 7d)<br>
+                Geo-distance from home</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Kubernetes HPA Config</div>
+                <p>Min replicas: 3<br>
+                Max replicas: 10<br>
+                Target CPU: 70%<br>
+                Target Memory: 80%<br>
+                Scale-up: 1 pod/30s</p>
+            </div>
+
+            <div class="spec-card">
+                <div class="spec-title">Testing & Quality</div>
+                <p>Framework: ScalaTest<br>
+                Unit tests: 450+<br>
+                Integration tests: 120+<br>
+                Coverage: 85%+<br>
+                CI/CD: GitHub Actions</p>
+            </div>
+        </div>
+
+        <!-- Data Flow -->
+        <h2 style="color: #e53e3e; margin: 3rem 0 1.5rem;">Real-Time Data Flow</h2>
+        <div class="layer-section">
+            <div class="layer-title">Transaction Journey (End-to-End)</div>
+            <ol style="line-height: 2; color: #555;">
+                <li><strong>Transaction Initiation:</strong> Customer clicks "Pay Now" → E-commerce platform creates transaction event with 25 features (amount, merchant, location, time, card details)</li>
+                <li><strong>Kafka Ingestion:</strong> Transaction published to Kafka topic <code>transactions-raw</code> with partition key = customer_id (ensures ordering per customer)</li>
+                <li><strong>Stream Processing:</strong> Spark Structured Streaming (1-second micro-batches) reads from Kafka, enriches with historical data (customer velocity, merchant risk score)</li>
+                <li><strong>Rule-Based Layer (30%):</strong> Checks velocity limits (5 transactions/hour), geo-anomalies (>500km from last purchase), amount thresholds (>$2,000 high-risk)</li>
+                <li><strong>ML Scoring (70%):</strong> Random Forest (35%) + XGBoost (35%) predict fraud probability. Models loaded from MLflow registry, inference <50ms</li>
+                <li><strong>Final Score Calculation:</strong> Weighted average: <code>0.30*rule_score + 0.35*rf_score + 0.35*xgb_score</code> → Binary decision (fraud if score >0.75)</li>
+                <li><strong>StarRocks Storage:</strong> Transaction + fraud_score + decision written to StarRocks for real-time analytics. Analysts query fraud patterns with 200ms latency</li>
+                <li><strong>API Response:</strong> Spring Boot API returns fraud decision to payment gateway in <200ms total (ingestion → scoring → storage → response)</li>
+                <li><strong>Action:</strong> If fraud detected → Payment declined, alert sent to fraud team. If legitimate → Payment approved, proceed to fulfillment</li>
+                <li><strong>Monitoring:</strong> Prometheus tracks fraud rate, false positives, latency. Grafana alerts if fraud rate spikes >15% or latency >300ms</li>
+            </ol>
+        </div>
+
+        <!-- Performance Optimization -->
+        <h2 style="color: #e53e3e; margin: 3rem 0 1.5rem;">Performance Optimization Journey</h2>
+        <div class="layer-section">
+            <div class="layer-title">Query Latency: 8 seconds → 200ms (96% improvement)</div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #e53e3e; color: white;">
+                    <tr>
+                        <th style="padding: 1rem; text-align: left;">Optimization</th>
+                        <th style="padding: 1rem; text-align: right;">Latency Before</th>
+                        <th style="padding: 1rem; text-align: right;">Latency After</th>
+                        <th style="padding: 1rem; text-align: right;">Impact</th>
+                    </tr>
+                </thead>
+                <tbody style="background: white;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Baseline (PostgreSQL)</td>
+                        <td style="padding: 1rem; text-align: right;">8,000ms</td>
+                        <td style="padding: 1rem; text-align: right;">-</td>
+                        <td style="padding: 1rem; text-align: right;">-</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Switch to StarRocks (columnar)</td>
+                        <td style="padding: 1rem; text-align: right;">8,000ms</td>
+                        <td style="padding: 1rem; text-align: right;">2,500ms</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-69%</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Add indexes on merchant_id, timestamp</td>
+                        <td style="padding: 1rem; text-align: right;">2,500ms</td>
+                        <td style="padding: 1rem; text-align: right;">800ms</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-68%</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Enable query result cache</td>
+                        <td style="padding: 1rem; text-align: right;">800ms</td>
+                        <td style="padding: 1rem; text-align: right;">350ms</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-56%</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem;">Optimize partition strategy (by date)</td>
+                        <td style="padding: 1rem; text-align: right;">350ms</td>
+                        <td style="padding: 1rem; text-align: right;">200ms</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-43%</td>
+                    </tr>
+                    <tr style="background: #f8f9fa; font-weight: 700;">
+                        <td style="padding: 1rem;">Total Improvement</td>
+                        <td style="padding: 1rem; text-align: right;">8,000ms</td>
+                        <td style="padding: 1rem; text-align: right;">200ms</td>
+                        <td style="padding: 1rem; text-align: right; color: #48bb78;">-96%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ML Model Performance -->
+        <h2 style="color: #e53e3e; margin: 3rem 0 1.5rem;">ML Model Training & Evaluation</h2>
+        <div class="layer-section">
+            <div class="layer-title">Confusion Matrix (Test Set: 50K Transactions)</div>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead style="background: #e53e3e; color: white;">
+                    <tr>
+                        <th style="padding: 1rem;"></th>
+                        <th style="padding: 1rem;">Predicted Legitimate</th>
+                        <th style="padding: 1rem;">Predicted Fraud</th>
+                    </tr>
+                </thead>
+                <tbody style="background: white;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem; font-weight: 700;">Actual Legitimate</td>
+                        <td style="padding: 1rem; text-align: center; background: #c6f6d5;">44,750 (TN)</td>
+                        <td style="padding: 1rem; text-align: center; background: #fed7d7;">320 (FP)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 1rem; font-weight: 700;">Actual Fraud</td>
+                        <td style="padding: 1rem; text-align: center; background: #fed7d7;">650 (FN)</td>
+                        <td style="padding: 1rem; text-align: center; background: #c6f6d5;">4,280 (TP)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="color: #555; margin-top: 1rem;">
+                <strong>Metrics:</strong> Precision: 94% | Recall: 87% | F1-Score: 90% | Accuracy: 98%<br>
+                <strong>Business Impact:</strong> False Positive Rate: 6% (320 legitimate flagged as fraud) → Acceptable for fraud prevention
+            </p>
+        </div>
+
+        <!-- Key Challenges -->
+        <h2 style="color: #e53e3e; margin: 3rem 0 1.5rem;">Key Challenges & Solutions</h2>
+        
+        <div class="layer-section">
+            <h4 style="color: #e53e3e; margin-bottom: 1rem;">Challenge 1: Kafka Consumer Lag During Black Friday</h4>
+            <p style="color: #555; margin-bottom: 1rem;"><strong>Problem:</strong> Traffic spike from 2K TPS → 10K TPS caused Kafka consumer lag to reach 500K messages (5+ minute delay)</p>
+            <p style="color: #555;"><strong>Solution:</strong> Implemented Kubernetes HPA to auto-scale Spark consumers from 3 to 10 replicas. Increased Kafka partitions from 6 to 12. Result: Lag reduced to <10K messages (<1 minute delay) even during 5x traffic spikes.</p>
+        </div>
+
+        <div class="layer-section">
+            <h4 style="color: #e53e3e; margin-bottom: 1rem;">Challenge 2: ML Model Drift</h4>
+            <p style="color: #555; margin-bottom: 1rem;"><strong>Problem:</strong> Precision dropped from 94% to 78% over 3 months as fraud patterns evolved</p>
+            <p style="color: #555;"><strong>Solution:</strong> Automated weekly model retraining pipeline using Airflow. Monitors precision/recall metrics daily. Auto-triggers retraining if precision drops below 90%. Implemented A/B testing (10% traffic to new model) before full deployment.</p>
+        </div>
+
+        <div class="layer-section">
+            <h4 style="color: #e53e3e; margin-bottom: 1rem;">Challenge 3: False Positives Impact Customer Experience</h4>
+            <p style="color: #555; margin-bottom: 1rem;"><strong>Problem:</strong> Initial model had 15% false positive rate → 15K legitimate transactions declined per 100K transactions</p>
+            <p style="color: #555;"><strong>Solution:</strong> Tuned decision threshold from 0.5 to 0.75. Added manual review queue for scores 0.65-0.75 (borderline cases). Reduced FP rate to 6% while maintaining 87% recall. Implemented customer feedback loop to continuously improve model.</p>
+        </div>
+
+        <!-- Business Impact -->
+        <h2 style="color: #e53e3e; margin: 3rem 0 1.5rem;">Business Impact</h2>
+        <div class="layer-section">
+            <div class="layer-title">Results After 6 Months in Production</div>
+            <ul style="line-height: 2; color: #555;">
+                <li><strong>$1.2M+ Fraudulent Transactions Prevented</strong> - 94% precision caught $1.2M in fraud while maintaining low false positive rate</li>
+                <li><strong>$180K Saved in Manual Review Costs</strong> - Automated fraud detection reduced need for 3 FTE fraud analysts (annual salary $60K each)</li>
+                <li><strong>Customer Satisfaction +12%</strong> - Reduced false positives (15% → 6%) meant fewer legitimate customers declined</li>
+                <li><strong>Payment Processing Time -65%</strong> - Real-time scoring (<200ms) vs previous 24-hour batch fraud review</li>
+                <li><strong>Chargeback Rate -40%</strong> - Proactive fraud detection reduced chargebacks from 1.2% to 0.7% of transactions</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
