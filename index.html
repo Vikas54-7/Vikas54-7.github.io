@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vikas Pabba - Data Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; background: #f9fafb; }
+        
+        nav { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; padding: 1rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { font-size: 1.5rem; font-weight: 700; color: #667eea; text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: #555; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: #667eea; }
+        
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6rem 2rem; text-align: center; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.95; }
+        .hero-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .btn { padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s; display: inline-block; }
+        .btn-primary { background: white; color: #667eea; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: white; border: 2px solid white; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.3); }
+        .btn-resume { background: #f39c12; color: white; }
+        .btn-resume:hover { background: #e67e22; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+        section { margin-bottom: 4rem; }
+        h2 { font-size: 2.5rem; margin-bottom: 2rem; color: #667eea; }
+        .about-text { font-size: 1.1rem; line-height: 1.8; color: #555; }
+        
+        .project-card { background: white; padding: 2.5rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 2px 15px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 5px 25px rgba(0,0,0,0.15); }
+        .project-card h3 { color: #667eea; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .project-domain { color: #888; font-style: italic; margin-bottom: 1rem; }
+        .project-actions { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .action-link { padding: 8px 20px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; color: white; }
+        .action-architecture { background: #667eea; }
+        .action-architecture:hover { background: #5568d3; }
+        .action-demo { background: #f39c12; }
+        .action-demo:hover { background: #e67e22; }
+        .action-dataset { background: #3498db; }
+        .action-dataset:hover { background: #2980b9; }
+        .action-github { background: #2c3e50; }
+        .action-github:hover { background: #34495e; }
+        
+        .project-dataset { background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #667eea; }
+        .project-brief { margin-bottom: 1.5rem; line-height: 1.8; }
+        .project-highlights { list-style: none; margin-bottom: 1.5rem; }
+        .project-highlights li { padding: 0.8rem 0; padding-left: 1.5rem; position: relative; line-height: 1.6; }
+        .project-highlights li:before { content: "→"; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+        .project-tech-stack { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tech-tag { background: #667eea; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
+        
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .skill-category { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .skill-category h3 { color: #667eea; margin-bottom: 1rem; }
+        .skill-category ul { list-style: none; }
+        .skill-category li { padding: 0.5rem 0; padding-left: 1.5rem; position: relative; }
+        .skill-category li:before { content: "✓"; position: absolute; left: 0; color: #667eea; }
+        
+        .experience-item, .education-item { background: white; padding: 2rem; border-radius: 10px; margin-bottom: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .experience-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+        .experience-title { font-size: 1.3rem; font-weight: 600; color: #667eea; }
+        .experience-company { color: #555; margin-top: 0.3rem; }
+        .experience-date { color: #888; font-size: 0.95rem; }
+        
+        .contact-section { background: white; padding: 3rem; border-radius: 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
+        .contact-links { display: flex; justify-content: center; gap: 1.5rem; margin: 2rem 0; flex-wrap: wrap; }
+        .contact-links a { padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s; }
+        .contact-links a:hover { background: #5568d3; transform: translateY(-2px); }
+        
+        footer { background: #2c3e50; color: white; text-align: center; padding: 2rem; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-brand">Vikas Pabba</a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Vikas Pabba</h1>
+        <p>Data Engineer | 4 Years Experience | M.S. Computer Science</p>
+        <div class="hero-buttons">
+            <a href="#projects" class="btn btn-primary">View Projects</a>
+            <a href="resume.pdf" download class="btn btn-resume">Download Resume</a>
+            <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="about">
+            <h2>About Me</h2>
+            <p class="about-text">
+                Data Engineer with 4 years of experience building production data pipelines and distributed systems. 
+                Currently pursuing M.S. in Computer Science at Texas A&M University-Kingsville (GPA: 3.7/4.0). 
+                Specialized in Apache Spark for distributed processing, Apache Kafka for real-time streaming, and Apache Airflow 
+                for workflow orchestration. Proven track record of processing millions of records with optimized performance 
+                and maintaining 99%+ data quality through automated validation frameworks.
+            </p>
+        </section>
+
+        <section id="experience">
+            <h2>Professional Experience</h2>
+            
+            <div class="experience-item">
+                <div class="experience-header">
+                    <div>
+                        <div class="experience-title">Software Engineer Intern</div>
+                        <div class="experience-company">Websol.ai | Remote</div>
+                    </div>
+                    <div class="experience-date">Aug 2025 – Present</div>
+                </div>
+                <ul class="project-highlights">
+                    <li>Architected production data pipelines using Apache Spark on AWS EMR processing 50K+ daily records with 99.9% uptime</li>
+                    <li>Built RESTful APIs with Spring Boot serving 10K+ requests/day with p99 latency <200ms using SOLID principles and Resilience4j</li>
+                    <li>Implemented real-time streaming with Apache Kafka & Apache Airflow orchestration with exactly-once-semantics</li>
+                    <li>Optimized PostgreSQL queries by 60% through indexing, query rewriting, and materialized views</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <div class="experience-header">
+                    <div>
+                        <div class="experience-title">Graduate Student & Research Assistant</div>
+                        <div class="experience-company">Texas A&M University - Kingsville</div>
+                    </div>
+                    <div class="experience-date">Aug 2023 – May 2025</div>
+                </div>
+                <ul class="project-highlights">
+                    <li>Completed M.S. in Computer Science (GPA: 3.7/4.0) specializing in Big Data Analytics and Distributed Systems</li>
+                    <li>Conducted research on Spark optimization achieving 70% query performance improvement through custom partitioning</li>
+                    <li>Built production projects with Airflow DAGs, Kafka streaming, and Kubernetes auto-scaling on AWS</li>
+                    <li>Achieved 85%+ test coverage with comprehensive testing frameworks</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <div class="experience-header">
+                    <div>
+                        <div class="experience-title">Data Engineer</div>
+                        <div class="experience-company">HCL Technologies | Chennai, India</div>
+                    </div>
+                    <div class="experience-date">Jul 2021 – Jul 2023</div>
+                </div>
+                <ul class="project-highlights">
+                    <li>Designed 10+ enterprise ETL pipelines using IBM DataStage and Apache Spark for Fortune 150 banking operations</li>
+                    <li>Led migration of 3M+ banking records with zero data loss and full regulatory compliance using CDC/HVR</li>
+                    <li>Optimized batch jobs by 45% through parallel processing and Spark tuning on Hadoop clusters (1TB+ daily volumes)</li>
+                    <li>Built PySpark transformations with 98%+ data quality, reducing incident resolution time by 30%</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>Projects</h2>
+
+            <!-- PROJECT 1: NYC TAXI ANALYTICS -->
+            <div class="project-card">
+                <h3>🚕 NYC Taxi Analytics Platform</h3>
+                <p class="project-domain">***Domain: Transportation & Real-Time Analytics***</p>
+                
+                <div class="project-actions">
+                    <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" target="_blank" class="action-link action-github">GitHub</a>
+                    <a href="nyc-architecture.html" class="action-link action-architecture">Architecture →</a>
+                    <a href="nyc-dashboard.html" class="action-link action-demo">Dashboard →</a>
+                    <a href="https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page" target="_blank" class="action-link action-dataset">Dataset →</a>
+                </div>
+                
+                <div class="project-dataset">
+                    <strong>Dataset:</strong> NYC TLC Official Trip Records (Jan-Mar 2024)<br>
+                    <strong>Scale:</strong> 9.2M trips | $253M revenue | 160MB parquet data
+                </div>
+
+                <p class="project-brief">
+                    <strong>Overview:</strong> Production-grade data platform processing 9.2 million NYC taxi trips with real-time streaming, workflow orchestration, and OLAP analytics. Built end-to-end pipeline demonstrating distributed systems, message queuing, and high-performance analytical queries achieving sub-100ms response times.
+                </p>
+
+                <ul class="project-highlights">
+                    <li><strong>Real-Time Streaming:</strong> Apache Kafka producer/consumer architecture with 57 messages/sec throughput for continuous trip data ingestion from parquet files to analytical warehouse</li>
+                    <li><strong>Workflow Orchestration:</strong> Apache Airflow DAG managing complete ETL pipeline with task dependencies, scheduling (daily @ 6 AM UTC), and monitoring achieving 99%+ success rate</li>
+                    <li><strong>OLAP Analytics:</strong> DuckDB columnar database processing complex analytical queries (revenue analysis, hourly patterns, location analytics) with sub-100ms performance on 9.2M records</li>
+                    <li><strong>Interactive Dashboard:</strong> Real-time visualization showing $253M revenue, peak hours (6 PM = 666K trips), payment distributions (78% credit card), and top locations (JFK: 800K trips)</li>
+                    <li><strong>Data Quality:</strong> Automated validation achieving 99%+ quality score through schema validation, null checks, and business rule enforcement</li>
+                    <li><strong>Containerized Deployment:</strong> Docker Compose orchestrating Kafka, Zookeeper, Airflow, PostgreSQL (metadata), and Kafka UI on localhost with persistent volumes</li>
+                </ul>
+
+                <div class="project-tech-stack">
+                    <span class="tech-tag">Apache Kafka</span>
+                    <span class="tech-tag">Apache Airflow</span>
+                    <span class="tech-tag">DuckDB</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">Pandas</span>
+                    <span class="tech-tag">Flask</span>
+                    <span class="tech-tag">Chart.js</span>
+                    <span class="tech-tag">Git</span>
+                </div>
+            </div>
+
+            <!-- PROJECT 2: SALES ANALYTICS ENGINE -->
+            <div class="project-card">
+                <h3>💼 Sales Analytics Engine</h3>
+                <p class="project-domain">***Domain: E-Commerce & Business Intelligence***</p>
+                
+                <div class="project-actions">
+                    <a href="https://github.com/Vikas54-7/sales-analytics-engine" target="_blank" class="action-link action-github">GitHub</a>
+                    <a href="sales-analytics-architecture.html" class="action-link action-architecture">Architecture →</a>
+                    <a href="sales-analytics-dashboard.html" class="action-link action-demo">Dashboard →</a>
+                    <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" target="_blank" class="action-link action-dataset">Dataset →</a>
+                </div>
+                
+                <div class="project-dataset">
+                    <strong>Dataset:</strong> E-Commerce Sales Data (Brazilian Marketplace)<br>
+                    <strong>Scale:</strong> 99,441 orders | Distributed processing with Apache Spark
+                </div>
+
+                <p class="project-brief">
+                    <strong>Overview:</strong> Production-grade data processing platform combining Apache Spark for distributed ETL transformations and Spring Boot for RESTful API services. Processes 99K+ sales transactions with complex aggregations, window functions, and SQL optimization techniques achieving sub-100ms API response times.
+                </p>
+
+                <ul class="project-highlights">
+                    <li><strong>Distributed Processing:</strong> Apache Spark (PySpark 3.5) in Google Colab processing 99K orders with window functions (running totals per customer), complex aggregations (customer lifetime value), and Spark SQL queries optimized through caching and partitioning strategies</li>
+                    <li><strong>Backend Services:</strong> Spring Boot 3.5 REST API (Java 17) with 7 endpoints serving analytics data - health checks, order CRUD operations, summary statistics, top customers analysis, and order status breakdowns with <100ms p99 latency</li>
+                    <li><strong>SQL Optimization:</strong> PostgreSQL 15 with custom queries leveraging indexes, materialized views, and query execution plan analysis achieving 60% performance improvement. Implemented JPA repositories with native SQL for complex analytical queries</li>
+                    <li><strong>Data Quality & Validation:</strong> Automated data quality checks in Spark pipeline filtering null values, validating schemas, and enforcing business rules achieving 99%+ data quality score across 99K records</li>
+                    <li><strong>Performance Tuning:</strong> Spark optimization through broadcast variables, repartitioning (4 partitions by customer_id), and in-memory caching reducing processing time from 45s to 14.3s (68% improvement)</li>
+                    <li><strong>Containerized Deployment:</strong> Docker Compose orchestrating PostgreSQL database, Spring Boot API server, with persistent volumes and health checks. API accessible on localhost:8080 with Swagger documentation</li>
+                    <li><strong>Code Quality:</strong> Followed SOLID principles in Spring Boot service layer, implemented proper exception handling with custom error responses, and utilized Hibernate for ORM with optimized fetch strategies</li>
+                </ul>
+
+                <div class="project-tech-stack">
+                    <span class="tech-tag">Apache Spark</span>
+                    <span class="tech-tag">Spring Boot</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Java</span>
+                    <span class="tech-tag">SQL</span>
+                    <span class="tech-tag">Hibernate</span>
+                    <span class="tech-tag">Maven</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h2>Skills & Technologies</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Big Data & Streaming</h3>
+                    <ul>
+                        <li>Apache Spark (PySpark, Scala)</li>
+                        <li>Apache Kafka</li>
+                        <li>Apache Airflow</li>
+                        <li>Hadoop</li>
+                        <li>Delta Lake</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Programming Languages</h3>
+                    <ul>
+                        <li>Python</li>
+                        <li>Scala</li>
+                        <li>Java</li>
+                        <li>SQL</li>
+                        <li>PySpark</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Databases & Storage</h3>
+                    <ul>
+                        <li>PostgreSQL</li>
+                        <li>DuckDB</li>
+                        <li>BigQuery</li>
+                        <li>SQL Optimization</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Cloud Platforms</h3>
+                    <ul>
+                        <li>AWS (EMR, S3, Glue)</li>
+                        <li>GCP (Dataproc, BigQuery)</li>
+                        <li>Azure (Databricks)</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Backend & APIs</h3>
+                    <ul>
+                        <li>Spring Boot</li>
+                        <li>Flask</li>
+                        <li>RESTful APIs</li>
+                        <li>Microservices</li>
+                        <li>Hibernate/JPA</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>DevOps & Tools</h3>
+                    <ul>
+                        <li>Docker & Kubernetes</li>
+                        <li>CI/CD Pipelines</li>
+                        <li>Git & GitHub</li>
+                        <li>Maven</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Data Engineering Tools</h3>
+                    <ul>
+                        <li>Pandas</li>
+                        <li>IBM DataStage</li>
+                        <li>CDC/HVR Replication</li>
+                        <li>Data Quality Frameworks</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="education">
+            <h2>Education</h2>
+            <div class="education-item">
+                <div class="experience-header">
+                    <div>
+                        <div class="experience-title">M.S. in Computer and Information Sciences</div>
+                        <div class="experience-company">Texas A&M University, Kingsville</div>
+                    </div>
+                    <div class="experience-date">Aug 2023 – May 2025 | GPA: 3.7/4.0</div>
+                </div>
+                <p><strong>Relevant Coursework:</strong> Advanced Database Systems, Big Data Analytics, Distributed Systems, Cloud Computing, Machine Learning</p>
+            </div>
+
+            <div class="education-item">
+                <div class="experience-header">
+                    <div>
+                        <div class="experience-title">B.Tech in Electronics and Communication Engineering</div>
+                        <div class="experience-company">JNTU, India</div>
+                    </div>
+                    <div class="experience-date">Aug 2017 – May 2021</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="contact-section">
+                <h2>Get In Touch</h2>
+                <p style="margin: 20px 0;">I'm actively seeking opportunities in data engineering and distributed systems roles. Let's connect!</p>
+                <div class="contact-links">
+                    <a href="mailto:pabba.vikas54@gmail.com">Email Me</a>
+                    <a href="https://www.linkedin.com/in/pabbavikas/" target="_blank">LinkedIn</a>
+                    <a href="https://github.com/Vikas54-7" target="_blank">GitHub</a>
+                </div>
+                <p style="margin-top: 2rem; font-size: 1.1rem;">📍 San Antonio, TX | 📞 (210) 873-7446</p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 Vikas Pabba. Built with passion for data engineering.</p>
+    </footer>
+</body>
+</html>
