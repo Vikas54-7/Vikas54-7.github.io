@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics - Architecture | Vikas Pabba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0e27; color: #fff; min-height: 100vh; }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.3); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #1a1f3a;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #2d3561;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .stat-card .label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .diagram {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .diagram h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .flow-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .flow-box {
+            background: #0f1429;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            min-width: 140px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .flow-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        .flow-box .icon { font-size: 2rem; margin-bottom: 10px; }
+        .flow-box h4 { color: #667eea; font-size: 0.9rem; margin-bottom: 5px; }
+        .flow-box p { color: #888; font-size: 0.75rem; }
+        .arrow { color: #667eea; font-size: 1.5rem; font-weight: bold; }
+        .arrow-down { 
+            text-align: center; 
+            color: #667eea; 
+            font-size: 2rem; 
+            margin: 1rem 0;
+        }
+        
+        .tech-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .tech-section h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .tech-item {
+            background: #0f1429;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #2d3561;
+        }
+        .tech-item h4 { color: #667eea; font-size: 0.95rem; }
+        .tech-item p { color: #888; font-size: 0.8rem; margin-top: 5px; }
+        
+        .code-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .code-section h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .code-block {
+            background: #0f1429;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+            overflow-x: auto;
+        }
+        .code-block h3 {
+            color: #667eea;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .code-block code {
+            color: #a9b7c6;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        
+        .endpoints-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .endpoints-section h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .endpoint-item {
+            background: #0f1429;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #2d3561;
+        }
+        .endpoint-method {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 60px;
+            text-align: center;
+        }
+        .endpoint-path {
+            color: #888;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .footer a { color: #667eea; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .flow-row { flex-direction: column; }
+            .arrow { transform: rotate(90deg); }
+            .header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+        <h1>💼 Sales Analytics Engine</h1>
+        <p>Distributed Data Processing Architecture</p>
+    </div>
+    
+    <div class="container">
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="value">99,441</div>
+                <div class="label">Orders Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">7</div>
+                <div class="label">REST Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="value"><100ms</div>
+                <div class="label">API Response Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">Spark 3.5</div>
+                <div class="label">Processing Engine</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">Java 17</div>
+                <div class="label">Spring Boot 3.5</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">PostgreSQL 15</div>
+                <div class="label">Database</div>
+            </div>
+        </div>
+        
+        <!-- Architecture Diagram -->
+        <div class="diagram">
+            <h2>🏗️ System Architecture</h2>
+            
+            <div class="flow-row">
+                <div class="flow-box">
+                    <div class="icon">📊</div>
+                    <h4>E-Commerce Data</h4>
+                    <p>CSV Format</p>
+                    <p>99K Records</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">⚡</div>
+                    <h4>Apache Spark</h4>
+                    <p>PySpark 3.5</p>
+                    <p>Distributed</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">🔄</div>
+                    <h4>Transformations</h4>
+                    <p>Window Functions</p>
+                    <p>Aggregations</p>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="flow-box">
+                    <div class="icon">🗄️</div>
+                    <h4>PostgreSQL</h4>
+                    <p>Database</p>
+                    <p>Persistent Storage</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">☕</div>
+                    <h4>Spring Boot</h4>
+                    <p>Java 17 API</p>
+                    <p>REST Services</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">📱</div>
+                    <h4>JSON Response</h4>
+                    <p>HTTP/REST</p>
+                    <p>Client Apps</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Spark Code Examples -->
+        <div class="code-section">
+            <h2>⚡ Apache Spark Processing</h2>
+            
+            <div class="code-block">
+                <h3>Window Functions</h3>
+                <code>
+window_spec = Window.partitionBy("customer_id").orderBy("order_id")<br>
+df_with_windows = df.withColumn(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"order_number_for_customer",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.row_number().over(window_spec)<br>
+)
+                </code>
+            </div>
+            
+            <div class="code-block">
+                <h3>Complex Aggregations</h3>
+                <code>
+customer_stats = df.groupBy("customer_id").agg(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.count("*").alias("total_orders"),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.sum("order_amount").alias("total_spent"),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.avg("order_amount").alias("avg_order_value")<br>
+)
+                </code>
+            </div>
+            
+            <div class="code-block">
+                <h3>Spark SQL</h3>
+                <code>
+top_customers = spark.sql("""<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SELECT customer_id, COUNT(*) as order_count<br>
+&nbsp;&nbsp;&nbsp;&nbsp;FROM orders<br>
+&nbsp;&nbsp;&nbsp;&nbsp;GROUP BY customer_id<br>
+&nbsp;&nbsp;&nbsp;&nbsp;HAVING COUNT(*) >= 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ORDER BY order_count DESC<br>
+&nbsp;&nbsp;&nbsp;&nbsp;LIMIT 20<br>
+""")
+                </code>
+            </div>
+        </div>
+        
+        <!-- Tech Stack -->
+        <div class="tech-section">
+            <h2>🛠️ Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>Apache Spark</h4>
+                    <p>Distributed Processing</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Spring Boot</h4>
+                    <p>Java Backend</p>
+                </div>
+                <div class="tech-item">
+                    <h4>PostgreSQL</h4>
+                    <p>Database</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Docker</h4>
+                    <p>Containerization</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Maven</h4>
+                    <p>Build Tool</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Hibernate</h4>
+                    <p>ORM</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Python</h4>
+                    <p>Data Processing</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Java 17</h4>
+                    <p>API Development</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Endpoints -->
+        <div class="endpoints-section">
+            <h2>🌐 REST API Endpoints</h2>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/sales/health</span>
+                <span style="color: #888;">Health check</span>
+            </div>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">POST</span>
+                <span class="endpoint-path">/api/sales/orders</span>
+                <span style="color: #888;">Create new order</span>
+            </div>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/sales/orders</span>
+                <span style="color: #888;">Get all orders</span>
+            </div>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/sales/orders/customer/{id}</span>
+                <span style="color: #888;">Get customer orders</span>
+            </div>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/sales/summary</span>
+                <span style="color: #888;">Summary statistics</span>
+            </div>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/sales/top-customers</span>
+                <span style="color: #888;">Top 10 customers</span>
+            </div>
+            
+            <div class="endpoint-item">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/sales/stats-by-status</span>
+                <span style="color: #888;">Order stats by status</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>
+            Built by <strong>Vikas Pabba</strong> | 
+            <a href="https://github.com/Vikas54-7/sales-analytics-engine" target="_blank">View on GitHub</a> |
+            <a href="sales-analytics-dashboard.html">View Dashboard →</a>
+        </p>
+    </div>
+</body>
+</html>
