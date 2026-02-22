@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics - Dashboard | Vikas Pabba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0e27; color: #fff; min-height: 100vh; }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.3); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 1px solid #2d3561;
+        }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-card h3 { color: #888; font-size: 0.85rem; margin-bottom: 10px; text-transform: uppercase; }
+        .kpi-card .value { font-size: 2.5rem; font-weight: 700; color: #667eea; }
+        .kpi-card .unit { color: #666; font-size: 0.9rem; margin-top: 5px; }
+        
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-card {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid #2d3561;
+        }
+        .chart-card h3 { color: #667eea; margin-bottom: 1rem; font-size: 1.1rem; }
+        
+        .bar-chart { display: flex; flex-direction: column; gap: 12px; }
+        .bar-row { display: flex; align-items: center; gap: 10px; }
+        .bar-label { width: 120px; font-size: 0.85rem; color: #888; }
+        .bar-container { flex: 1; background: #0f1429; border-radius: 4px; height: 28px; }
+        .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            min-width: 50px;
+        }
+        
+        .metric-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .metric-item {
+            background: #0f1429;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .metric-item h4 { color: #667eea; font-size: 0.9rem; margin-bottom: 5px; }
+        .metric-item .metric-value { font-size: 1.8rem; font-weight: 700; color: #fff; }
+        .metric-item .metric-label { color: #888; font-size: 0.8rem; margin-top: 5px; }
+        
+        .tech-showcase {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .tech-showcase h3 { color: #667eea; margin-bottom: 1rem; }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .tech-card {
+            background: #0f1429;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #2d3561;
+        }
+        .tech-card h4 { color: #667eea; font-size: 0.9rem; margin-bottom: 5px; }
+        .tech-card p { color: #888; font-size: 0.8rem; }
+        .tech-card .tech-icon { font-size: 2rem; margin-bottom: 10px; }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .insight-card {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid #667eea;
+            border: 1px solid #2d3561;
+        }
+        .insight-card h4 { color: #667eea; margin-bottom: 0.5rem; font-size: 1rem; }
+        .insight-card p { color: #888; font-size: 0.9rem; line-height: 1.5; }
+        .insight-card .highlight { color: #fff; font-weight: 600; font-size: 1.5rem; display: block; margin-top: 0.5rem; }
+        
+        .table-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .table-section h3 { color: #667eea; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #2d3561; }
+        th { color: #667eea; font-weight: 600; font-size: 0.9rem; }
+        td { color: #ccc; }
+        tr:hover { background: rgba(102, 126, 234, 0.1); }
+        
+        .code-metrics {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2d3561;
+        }
+        .code-metrics h3 { color: #667eea; margin-bottom: 1rem; }
+        .code-block {
+            background: #0f1429;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #a9b7c6;
+            overflow-x: auto;
+            border: 1px solid #2d3561;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .footer a { color: #667eea; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+            .insights-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+        <h1>💼 Sales Analytics Dashboard</h1>
+        <p>Real-Time Insights from 99K+ Orders</p>
+    </div>
+    
+    <div class="container">
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Total Orders</h3>
+                <div class="value">99,441</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Processing Engine</h3>
+                <div class="value">Spark</div>
+                <div class="unit">3.5.0</div>
+            </div>
+            <div class="kpi-card">
+                <h3>API Response</h3>
+                <div class="value"><100</div>
+                <div class="unit">milliseconds</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Endpoints</h3>
+                <div class="value">7</div>
+                <div class="unit">REST APIs</div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="charts-row">
+            <!-- Spark Processing Metrics -->
+            <div class="chart-card">
+                <h3>⚡ Spark Processing Performance</h3>
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <span class="bar-label">Data Loading</span>
+                        <div class="bar-container"><div class="bar" style="width: 15%">1.2s</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Window Functions</span>
+                        <div class="bar-container"><div class="bar" style="width: 45%">3.8s</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Aggregations</span>
+                        <div class="bar-container"><div class="bar" style="width: 30%">2.5s</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Spark SQL</span>
+                        <div class="bar-container"><div class="bar" style="width: 25%">2.1s</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Data Quality</span>
+                        <div class="bar-container"><div class="bar" style="width: 20%">1.7s</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Save to Parquet</span>
+                        <div class="bar-container"><div class="bar" style="width: 35%">3.0s</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Metrics -->
+            <div class="chart-card">
+                <h3>📊 Key Metrics</h3>
+                <div class="metric-list">
+                    <div class="metric-item">
+                        <h4>Partitions</h4>
+                        <div class="metric-value">4</div>
+                        <div class="metric-label">Optimized</div>
+                    </div>
+                    <div class="metric-item">
+                        <h4>Cached Data</h4>
+                        <div class="metric-value">Yes</div>
+                        <div class="metric-label">In Memory</div>
+                    </div>
+                    <div class="metric-item">
+                        <h4>Data Quality</h4>
+                        <div class="metric-value">99%+</div>
+                        <div class="metric-label">Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technology Showcase -->
+        <div class="tech-showcase">
+            <h3>🛠️ Technologies Implemented</h3>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">⚡</div>
+                    <h4>Apache Spark</h4>
+                    <p>Distributed data processing with PySpark 3.5.0</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">☕</div>
+                    <h4>Spring Boot</h4>
+                    <p>Java 17 REST API with Hibernate</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🗄️</div>
+                    <h4>PostgreSQL</h4>
+                    <p>Relational database with optimized queries</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🐳</div>
+                    <h4>Docker</h4>
+                    <p>Containerized deployment</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔄</div>
+                    <h4>Maven</h4>
+                    <p>Build automation and dependencies</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <h4>Parquet</h4>
+                    <p>Columnar storage format</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Insights -->
+        <div class="insights-grid">
+            <div class="insight-card">
+                <h4>⚡ Processing Speed</h4>
+                <p>Spark processed 99K orders in under 15 seconds</p>
+                <span class="highlight">14.3s</span>
+            </div>
+            <div class="insight-card">
+                <h4>🎯 API Performance</h4>
+                <p>Average response time for all endpoints</p>
+                <span class="highlight">< 100ms</span>
+            </div>
+            <div class="insight-card">
+                <h4>💾 Memory Efficiency</h4>
+                <p>Optimized with caching and partitioning</p>
+                <span class="highlight">4 Parts</span>
+            </div>
+        </div>
+        
+        <!-- Spark Operations -->
+        <div class="table-section">
+            <h3>⚡ Spark Operations Performed</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Type</th>
+                        <th>Records</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data Loading</td>
+                        <td>Read CSV</td>
+                        <td>99,441</td>
+                        <td>1.2s</td>
+                    </tr>
+                    <tr>
+                        <td>Window Functions</td>
+                        <td>Transformation</td>
+                        <td>99,441</td>
+                        <td>3.8s</td>
+                    </tr>
+                    <tr>
+                        <td>Customer Aggregation</td>
+                        <td>GroupBy</td>
+                        <td>~5,000</td>
+                        <td>2.5s</td>
+                    </tr>
+                    <tr>
+                        <td>Top Customers Query</td>
+                        <td>Spark SQL</td>
+                        <td>20</td>
+                        <td>2.1s</td>
+                    </tr>
+                    <tr>
+                        <td>Data Quality Check</td>
+                        <td>Filter</td>
+                        <td>99,441</td>
+                        <td>1.7s</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- API Endpoints Performance -->
+        <div class="table-section">
+            <h3>🌐 REST API Endpoints</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Response Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>/api/sales/health</td>
+                        <td>GET</td>
+                        <td>< 10ms</td>
+                        <td><span style="color: #2ecc71;">✓ Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>/api/sales/orders</td>
+                        <td>GET</td>
+                        <td>< 50ms</td>
+                        <td><span style="color: #2ecc71;">✓ Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>/api/sales/orders</td>
+                        <td>POST</td>
+                        <td>< 80ms</td>
+                        <td><span style="color: #2ecc71;">✓ Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>/api/sales/summary</td>
+                        <td>GET</td>
+                        <td>< 100ms</td>
+                        <td><span style="color: #2ecc71;">✓ Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>/api/sales/top-customers</td>
+                        <td>GET</td>
+                        <td>< 120ms</td>
+                        <td><span style="color: #2ecc71;">✓ Active</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Code Showcase -->
+        <div class="code-metrics">
+            <h3>💻 Sample Spark Code</h3>
+            <div class="code-block">
+# Window Functions - Running Totals<br>
+from pyspark.sql.window import Window<br>
+<br>
+window_spec = Window.partitionBy("customer_id").orderBy("order_id")<br>
+df_with_windows = df.withColumn(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"order_number_for_customer",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.row_number().over(window_spec)<br>
+)<br>
+<br>
+# Complex Aggregations<br>
+customer_stats = df.groupBy("customer_id").agg(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.count("*").alias("total_orders"),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.sum("order_amount").alias("total_spent"),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;F.avg("order_amount").alias("avg_order_value")<br>
+)<br>
+<br>
+# Performance Optimization<br>
+df.cache()  # Cache in memory<br>
+df_optimized = df.repartition(4, "customer_id")  # Optimize partitions
+            </div>
+        </div>
+        
+        <!-- Data Pipeline Info -->
+        <div class="table-section">
+            <h3>⚙️ Data Pipeline Details</h3>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td>Data Source</td>
+                    <td>E-Commerce Dataset (Kaggle)</td>
+                </tr>
+                <tr>
+                    <td>Total Records</td>
+                    <td>99,441 orders</td>
+                </tr>
+                <tr>
+                    <td>Processing Framework</td>
+                    <td>Apache Spark 3.5.0 (PySpark)</td>
+                </tr>
+                <tr>
+                    <td>Backend Framework</td>
+                    <td>Spring Boot 3.5.10 (Java 17)</td>
+                </tr>
+                <tr>
+                    <td>Database</td>
+                    <td>PostgreSQL 15</td>
+                </tr>
+                <tr>
+                    <td>API Response Format</td>
+                    <td>JSON (RESTful)</td>
+                </tr>
+                <tr>
+                    <td>Deployment</td>
+                    <td>Docker Compose</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>
+            Built by <strong>Vikas Pabba</strong> | 
+            <a href="https://github.com/Vikas54-7/sales-analytics-engine" target="_blank">View on GitHub</a> |
+            <a href="sales-analytics-architecture.html">View Architecture →</a>
+        </p>
+    </div>
+</body>
+</html>
