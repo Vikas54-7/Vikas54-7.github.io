@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Analytics Engine — Architecture | Vikas Pabba</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0d;--surface:#161616;--surface2:#1c1c1c;--border:#222;--border2:#2a2a2a;--text:#e8e8e8;--text2:#999;--text3:#555;--accent:#f5c518;--green:#22c55e;--blue:#60a5fa;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--cyan:#22d3ee;}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 32px}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center}
+.nav-back{text-decoration:none;color:var(--text2);font-size:13px;transition:color .2s}.nav-back:hover{color:var(--accent)}
+.nav-title{font-family:'Fira Code',monospace;font-size:12px;color:var(--text3)}
+.hero-bar{max-width:1200px;margin:80px auto 0;padding:48px 32px 40px;border-bottom:1px solid var(--border)}
+.back-crumb{font-size:12px;color:var(--text3);font-family:'Fira Code',monospace;margin-bottom:16px}.back-crumb a{color:var(--text3);text-decoration:none}.back-crumb a:hover{color:var(--accent)}
+.page-title{font-size:clamp(32px,5vw,52px);font-weight:700;letter-spacing:-2px;color:#fff;margin-bottom:8px}.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--text2);font-family:'Fira Code',monospace;margin-bottom:24px}
+.page-tags{display:flex;gap:8px;flex-wrap:wrap}
+.page-tag{padding:4px 12px;border-radius:3px;font-size:11px;font-family:'Fira Code',monospace;border:1px solid var(--border2);color:var(--text3)}.page-tag.hl{border-color:rgba(245,197,24,0.3);color:var(--accent)}
+.wrap{max-width:1200px;margin:0 auto;padding:48px 32px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:48px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;transition:border-color .2s}.stat-card:hover{border-color:var(--border2)}
+.stat-val{font-family:'Fira Code',monospace;font-size:26px;font-weight:700;color:var(--accent);display:block}
+.stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+.section-label{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:6px}
+.section-title{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:24px}
+.links-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.link-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:6px;font-size:13px;text-decoration:none;border:1px solid var(--border2);color:var(--text2);transition:all .2s}.link-btn:hover,.link-btn.primary{border-color:var(--accent);color:var(--accent);background:rgba(245,197,24,0.06)}
+.flow-diagram{display:flex;flex-direction:column;gap:4px;margin-bottom:48px}
+.flow-stage{border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .2s}.flow-stage:hover{border-color:var(--s-color,var(--border2))}.flow-stage.active{border-color:var(--s-color,var(--accent))}
+.stage-row{display:grid;grid-template-columns:52px 1fr auto;align-items:stretch}
+.stage-num{background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:18px;font-weight:700;color:var(--s-color,var(--text3));border-right:1px solid var(--border);padding:16px 0}
+.stage-body{padding:16px 20px;background:var(--bg)}.stage-where{font-size:9px;letter-spacing:3px;color:var(--s-color,var(--text3));text-transform:uppercase;font-family:'Fira Code',monospace;margin-bottom:3px}
+.stage-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}.stage-desc{font-size:12px;color:var(--text3)}
+.stage-cost{padding:0 20px;display:flex;align-items:center;background:var(--bg);border-left:1px solid var(--border)}
+.cost-pill{padding:4px 10px;border-radius:20px;font-size:10px;font-family:'Fira Code',monospace;border:1px solid var(--border2);color:var(--text3);white-space:nowrap}
+.cost-free{border-color:rgba(34,197,94,0.3);color:var(--green);background:rgba(34,197,94,0.06)}
+.cost-local{border-color:rgba(96,165,250,0.3);color:var(--blue);background:rgba(96,165,250,0.06)}
+.detail-panel{display:none;background:var(--surface2);border-top:1px solid var(--border);padding:20px 24px;animation:slideIn .15s ease}.detail-panel.open{display:block}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:14px}
+.detail-item h4{font-size:9px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;font-family:'Fira Code',monospace;margin-bottom:6px}
+.detail-item p{font-size:12px;color:var(--text2);line-height:1.7}
+.detail-item code{background:rgba(245,197,24,0.08);color:var(--accent);padding:1px 6px;border-radius:3px;font-size:11px;font-family:'Fira Code',monospace}
+.interview-line{background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:6px;padding:12px 16px;font-size:12px;color:var(--text2);line-height:1.7;font-style:italic}.interview-line::before{content:'🎤 ';font-style:normal}
+.flow-arrow{display:flex;align-items:center;justify-content:center;height:20px;color:var(--border2);font-size:14px}
+.layers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:48px}
+.layer-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;transition:all .2s}.layer-card:hover{border-color:var(--l-color,var(--border2));transform:translateY(-2px)}.layer-card::before{content:'';display:block;height:2px;background:var(--l-color,var(--border2));border-radius:1px;margin-bottom:16px}
+.layer-icon{font-size:22px;margin-bottom:8px}.layer-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:6px}
+.layer-items{display:flex;flex-direction:column;gap:5px}.layer-item{font-size:12px;color:var(--text3);display:flex;gap:8px}.layer-item::before{content:'→';color:var(--l-color,var(--text3));flex-shrink:0;font-size:10px;margin-top:2px}
+.perf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:48px}
+.perf-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
+.perf-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:'Fira Code',monospace}
+.perf-bar-wrap{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.perf-bar{height:8px;background:rgba(245,197,24,0.1);border-radius:4px;flex:1}
+.perf-fill{height:100%;border-radius:4px}
+.perf-val{font-family:'Fira Code',monospace;font-size:13px;font-weight:600;white-space:nowrap}
+.perf-note{font-size:11px;color:var(--text3)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:640px){.stage-cost{display:none}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-back">← Back to Portfolio</a>
+    <div class="nav-title">sales-analytics / architecture</div>
+  </div>
+</nav>
+<div class="hero-bar">
+  <div class="back-crumb"><a href="index.html">vikas54-7.github.io</a> / <a href="index.html#projects">projects</a> / sales-architecture</div>
+  <div class="page-title">💼 Sales Analytics <em>Engine</em></div>
+  <div class="page-sub">PySpark ETL · Spring Boot REST API · PostgreSQL · Docker · March 2026</div>
+  <div class="page-tags">
+    <span class="page-tag hl">Apache Spark</span>
+    <span class="page-tag hl">Spring Boot</span>
+    <span class="page-tag hl">PostgreSQL</span>
+    <span class="page-tag">Java 17</span>
+    <span class="page-tag">PySpark 3.5</span>
+    <span class="page-tag">Docker Compose</span>
+    <span class="page-tag">Hibernate/JPA</span>
+    <span class="page-tag">Local Deploy</span>
+  </div>
+</div>
+<div class="wrap">
+  <div class="stats-row">
+    <div class="stat-card"><span class="stat-val">99K+</span><div class="stat-lbl">Orders Processed</div></div>
+    <div class="stat-card"><span class="stat-val">68%</span><div class="stat-lbl">Spark Speedup</div></div>
+    <div class="stat-card"><span class="stat-val">14.3s</span><div class="stat-lbl">Processing Time</div></div>
+    <div class="stat-card"><span class="stat-val">7</span><div class="stat-lbl">API Endpoints</div></div>
+    <div class="stat-card"><span class="stat-val">&lt;100ms</span><div class="stat-lbl">API p99 Latency</div></div>
+    <div class="stat-card"><span class="stat-val">60%</span><div class="stat-lbl">DB Speedup</div></div>
+  </div>
+  <div class="links-bar">
+    <a href="https://github.com/Vikas54-7/sales-analytics-engine" target="_blank" class="link-btn primary">GitHub Repository →</a>
+    <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" target="_blank" class="link-btn">Olist Dataset →</a>
+    <a href="sales-dashboard.html" class="link-btn">View Dashboard →</a>
+    <a href="index.html#projects" class="link-btn">← Back to Projects</a>
+  </div>
+  <div class="section-label">Pipeline Flow</div>
+  <div class="section-title">End-to-End Architecture — Click Each Stage</div>
+  <div class="flow-diagram">
+    <div class="flow-stage" style="--s-color:#60a5fa;" onclick="toggle(this,'d1')">
+      <div class="stage-row"><div class="stage-num">01</div><div class="stage-body"><div class="stage-where">Kaggle → Local</div><div class="stage-name">Brazilian E-Commerce Dataset (Olist)</div><div class="stage-desc">9 CSV files · 99,441 orders · customer + product + seller data</div></div><div class="stage-cost"><span class="cost-pill cost-free">FREE</span></div></div>
+      <div class="detail-panel" id="d1"><div class="detail-grid"><div class="detail-item"><h4>Source</h4><p>Olist Brazilian e-commerce public dataset on Kaggle. Real marketplace data from 2016–2018. 9 relational CSV files.</p></div><div class="detail-item"><h4>Schema</h4><p>Orders, customers, products, sellers, reviews, payments, geolocation. Star schema — orders as fact table, others as dimensions.</p></div><div class="detail-item"><h4>Scale</h4><p>99,441 orders, 96,096 customers, 32,951 products, 3,095 sellers. Rich data for analytics — revenue, CLV, churn, segmentation.</p></div></div><div class="interview-line">"Real marketplace data from a Brazilian e-commerce platform — not synthetic. 9 relational tables gives us a production-like schema for complex joins."</div></div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-stage" style="--s-color:#fb923c;" onclick="toggle(this,'d2')">
+      <div class="stage-row"><div class="stage-num">02</div><div class="stage-body"><div class="stage-where">Apache Spark (PySpark 3.5) · Google Colab</div><div class="stage-name">PySpark ETL — Distributed Processing</div><div class="stage-desc">Read CSVs → Join 9 tables → Window functions → Aggregations → Write PostgreSQL</div></div><div class="stage-cost"><span class="cost-pill cost-free">FREE</span></div></div>
+      <div class="detail-panel" id="d2"><div class="detail-grid"><div class="detail-item"><h4>Spark Session</h4><p>PySpark 3.5 on Google Colab. SparkSession with <code>jdbc</code> connector to PostgreSQL. 4 partitions by <code>customer_id</code>.</p></div><div class="detail-item"><h4>Window Functions</h4><p>Running totals per customer using <code>Window.partitionBy("customer_id").orderBy("order_date")</code>. Customer lifetime value calculation.</p></div><div class="detail-item"><h4>Optimizations</h4><p>Broadcast join for small dimension tables (&lt;10MB). In-memory caching of frequently accessed DataFrames. Repartitioning by customer_id.</p></div><div class="detail-item"><h4>Performance</h4><p>Processing time reduced from 45s → 14.3s (68% improvement) through caching + partitioning + broadcast variables.</p></div></div><div class="interview-line">"Broadcast joins for small dimension tables (products, sellers) eliminated shuffle operations — the biggest performance win from 45s to 14.3s."</div></div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-stage" style="--s-color:#22c55e;" onclick="toggle(this,'d3')">
+      <div class="stage-row"><div class="stage-num">03</div><div class="stage-body"><div class="stage-where">PostgreSQL 15 · Docker</div><div class="stage-name">PostgreSQL — Analytical Data Store</div><div class="stage-desc">Indexes + materialized views + optimized queries → 60% faster analytics</div></div><div class="stage-cost"><span class="cost-pill cost-local">LOCAL</span></div></div>
+      <div class="detail-panel" id="d3"><div class="detail-grid"><div class="detail-item"><h4>Schema Design</h4><p>Normalized schema with <code>orders</code>, <code>customers</code>, <code>products</code>, <code>order_items</code> tables. Foreign key constraints for data integrity.</p></div><div class="detail-item"><h4>Indexes</h4><p>Composite index on <code>(customer_id, order_date)</code>. Partial index on active orders. B-tree indexes on all JOIN columns.</p></div><div class="detail-item"><h4>Materialized Views</h4><p><code>mv_customer_stats</code> — pre-aggregated CLV and order counts. Refreshed daily. 60% query speedup vs live aggregation.</p></div></div><div class="interview-line">"Materialized views pre-compute expensive aggregations — customer lifetime value query went from 2.3s to 180ms. Worth the storage cost."</div></div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-stage" style="--s-color:#f5c518;" onclick="toggle(this,'d4')">
+      <div class="stage-row"><div class="stage-num">04</div><div class="stage-body"><div class="stage-where">Spring Boot 3.5 · Java 17</div><div class="stage-name">REST API — 7 Analytics Endpoints</div><div class="stage-desc">SOLID principles · Hibernate/JPA · Resilience4j · &lt;100ms p99 latency</div></div><div class="stage-cost"><span class="cost-pill cost-local">LOCAL</span></div></div>
+      <div class="detail-panel" id="d4"><div class="detail-grid"><div class="detail-item"><h4>7 Endpoints</h4><p><code>GET /health</code> · <code>GET /orders</code> · <code>POST /orders</code> · <code>GET /orders/{id}</code> · <code>GET /analytics/summary</code> · <code>GET /analytics/top-customers</code> · <code>GET /analytics/status</code></p></div><div class="detail-item"><h4>Architecture</h4><p>Controller → Service → Repository layers. SOLID principles throughout. Custom exception handling with proper HTTP status codes.</p></div><div class="detail-item"><h4>Performance</h4><p>Hibernate 2nd level cache for frequently-read data. Native SQL for complex analytical queries. Connection pooling with HikariCP.</p></div></div><div class="interview-line">"Service layer pattern with dependency injection means we can swap PostgreSQL for any database — zero changes to controller or business logic."</div></div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-stage" style="--s-color:#a78bfa;" onclick="toggle(this,'d5')">
+      <div class="stage-row"><div class="stage-num">05</div><div class="stage-body"><div class="stage-where">Docker Compose</div><div class="stage-name">Containerized Deployment</div><div class="stage-desc">PostgreSQL + Spring Boot in Docker Compose · Health checks · Persistent volumes</div></div><div class="stage-cost"><span class="cost-pill cost-local">LOCAL</span></div></div>
+      <div class="detail-panel" id="d5"><div class="detail-grid"><div class="detail-item"><h4>Services</h4><p>2 containers: <code>postgres:15</code> on port 5432, <code>sales-api</code> Spring Boot on port 8080. Depends-on with health checks.</p></div><div class="detail-item"><h4>Volumes</h4><p>Persistent volume for PostgreSQL data — survives container restarts. Environment variables for DB credentials.</p></div><div class="detail-item"><h4>Swagger</h4><p>SpringDoc OpenAPI 3.0 auto-generates Swagger UI at <code>localhost:8080/swagger-ui.html</code>. All 7 endpoints documented.</p></div></div><div class="interview-line">"Docker Compose means one command deploys both database and API — reproducible across any machine with no environment setup."</div></div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:48px">Performance Improvements</div>
+  <div class="section-title">Optimization Results</div>
+  <div class="perf-grid">
+    <div class="perf-card">
+      <div class="perf-label">Spark Processing Time</div>
+      <div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:100%;background:#f87171"></div></div><div class="perf-val" style="color:#f87171">45s</div></div>
+      <div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:32%;background:#22c55e"></div></div><div class="perf-val" style="color:#22c55e">14.3s</div></div>
+      <div class="perf-note">68% improvement via caching + broadcast joins</div>
+    </div>
+    <div class="perf-card">
+      <div class="perf-label">PostgreSQL Query Speed</div>
+      <div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:100%;background:#f87171"></div></div><div class="perf-val" style="color:#f87171">2.3s</div></div>
+      <div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:8%;background:#22c55e"></div></div><div class="perf-val" style="color:#22c55e">180ms</div></div>
+      <div class="perf-note">60% improvement via indexes + materialized views</div>
+    </div>
+    <div class="perf-card">
+      <div class="perf-label">API Response Time</div>
+      <div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:20%;background:#22c55e"></div></div><div class="perf-val" style="color:#22c55e">&lt;100ms</div></div>
+      <div class="perf-note">p99 latency across all 7 endpoints</div>
+    </div>
+  </div>
+
+  <div class="section-label">Architecture Layers</div>
+  <div class="section-title">4 Distinct Layers</div>
+  <div class="layers-grid">
+    <div class="layer-card" style="--l-color:#60a5fa"><div class="layer-icon">📥</div><div class="layer-name">Data Source</div><div class="layer-items"><div class="layer-item">Olist Brazilian e-commerce</div><div class="layer-item">9 relational CSV files</div><div class="layer-item">99,441 real orders</div></div></div>
+    <div class="layer-card" style="--l-color:#fb923c"><div class="layer-icon">⚙️</div><div class="layer-name">Processing Layer</div><div class="layer-items"><div class="layer-item">PySpark 3.5 ETL</div><div class="layer-item">Window functions + joins</div><div class="layer-item">45s → 14.3s (68% faster)</div></div></div>
+    <div class="layer-card" style="--l-color:#22c55e"><div class="layer-icon">🗄️</div><div class="layer-name">Storage Layer</div><div class="layer-items"><div class="layer-item">PostgreSQL 15</div><div class="layer-item">Indexes + materialized views</div><div class="layer-item">60% query improvement</div></div></div>
+    <div class="layer-card" style="--l-color:#f5c518"><div class="layer-icon">🔌</div><div class="layer-name">API Layer</div><div class="layer-items"><div class="layer-item">Spring Boot 3.5 (Java 17)</div><div class="layer-item">7 REST endpoints</div><div class="layer-item">&lt;100ms p99 latency</div></div></div>
+  </div>
+</div>
+<script>
+function toggle(stage,id){
+  const panel=document.getElementById(id);
+  const isOpen=panel.classList.contains('open');
+  document.querySelectorAll('.detail-panel.open').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.flow-stage.active').forEach(s=>s.classList.remove('active'));
+  if(!isOpen){panel.classList.add('open');stage.classList.add('active');}
+}
+</script>
+</body>
+</html>
