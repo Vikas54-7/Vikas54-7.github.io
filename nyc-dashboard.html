@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NYC Taxi Analytics — Dashboard | Vikas Pabba</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0d0d0d;--surface:#161616;--surface2:#1c1c1c;--border:#222;--border2:#2a2a2a;--text:#e8e8e8;--text2:#999;--text3:#555;--accent:#f5c518;--green:#22c55e;--blue:#60a5fa;--orange:#fb923c;--purple:#a78bfa;--cyan:#22d3ee;}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 32px}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center}
+.nav-back{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text2);font-size:13px;transition:color .2s}.nav-back:hover{color:var(--accent)}
+.nav-title{font-family:'Fira Code',monospace;font-size:12px;color:var(--text3)}
+.hero-bar{max-width:1200px;margin:80px auto 0;padding:40px 32px 32px;border-bottom:1px solid var(--border)}
+.back-crumb{font-size:12px;color:var(--text3);font-family:'Fira Code',monospace;margin-bottom:14px}.back-crumb a{color:var(--text3);text-decoration:none}.back-crumb a:hover{color:var(--accent)}
+.page-title{font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-1.5px;color:#fff;margin-bottom:6px}.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:13px;color:var(--text2);font-family:'Fira Code',monospace;margin-bottom:20px}
+.page-links{display:flex;gap:10px;flex-wrap:wrap}
+.pl{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;font-size:12px;text-decoration:none;border:1px solid var(--border2);color:var(--text2);transition:all .2s}.pl:hover,.pl.primary{border-color:var(--accent);color:var(--accent);background:rgba(245,197,24,0.06)}
+.wrap{max-width:1200px;margin:0 auto;padding:40px 32px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:40px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 18px;transition:border-color .2s}.kpi-card:hover{border-color:var(--border2)}
+.kpi-card.accent-card{border-color:rgba(245,197,24,0.2);background:rgba(245,197,24,0.04)}
+.kpi-val{font-family:'Fira Code',monospace;font-size:28px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:4px}
+.kpi-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-grid-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s}.chart-card:hover{border-color:var(--border2)}
+.chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.chart-title{font-size:14px;font-weight:600;color:#fff}.chart-sub{font-size:11px;color:var(--text3);margin-top:3px;font-family:'Fira Code',monospace}
+.chart-badge{padding:3px 10px;border-radius:20px;font-size:10px;border:1px solid var(--border2);color:var(--text3);font-family:'Fira Code',monospace}
+.data-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.data-table-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.data-table-title{font-size:14px;font-weight:600;color:#fff}
+.data-table-sub{font-size:11px;color:var(--text3);font-family:'Fira Code',monospace}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{background:var(--surface2);font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.data-table td{font-size:13px;padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)}
+.data-table tr:last-child td{border-bottom:none}.data-table tr:hover td{background:var(--surface2)}
+.t-accent{color:var(--accent);font-family:'Fira Code',monospace;font-weight:600}
+.t-blue{color:var(--blue);font-family:'Fira Code',monospace}
+.bar-wrap{display:flex;align-items:center;gap:10px}
+.mini-bar{height:4px;background:rgba(245,197,24,0.15);border-radius:2px;flex:1;overflow:hidden}
+.mini-bar-fill{height:100%;background:var(--accent);border-radius:2px}
+.sql-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.sql-header{padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.sql-title{font-size:12px;color:var(--text2);font-family:'Fira Code',monospace}
+.sql-badge{font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-family:'Fira Code',monospace}
+.sql-body{padding:20px;font-family:'Fira Code',monospace;font-size:12px;line-height:2;overflow-x:auto}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#86efac}.col{color:#e8e8e8}.cmt{color:#555}
+@media(max-width:768px){.chart-grid-2,.chart-grid-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-back">← Back to Portfolio</a>
+    <div class="nav-title">nyc-taxi / dashboard</div>
+  </div>
+</nav>
+<div class="hero-bar">
+  <div class="back-crumb"><a href="index.html">vikas54-7.github.io</a> / <a href="index.html#projects">projects</a> / nyc-dashboard</div>
+  <div class="page-title">🚕 NYC Taxi <em>Analytics Dashboard</em></div>
+  <div class="page-sub">9.2M trips · $253M revenue · DuckDB · Kafka · Airflow · Jan–Mar 2024</div>
+  <div class="page-links">
+    <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" target="_blank" class="pl primary">GitHub →</a>
+    <a href="nyc-architecture.html" class="pl">Architecture →</a>
+    <a href="https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page" target="_blank" class="pl">Dataset →</a>
+    <a href="https://public.tableau.com/views/NYCTaxiAnalytics-VikasPabba/Dashboard1" target="_blank" class="pl">Tableau →</a>
+    <a href="index.html#projects" class="pl">← Projects</a>
+  </div>
+</div>
+<div class="wrap">
+  <div class="kpi-row">
+    <div class="kpi-card accent-card"><div class="kpi-val">9.2M</div><div class="kpi-lbl">Total Trips</div><div class="kpi-sub">Jan–Mar 2024</div></div>
+    <div class="kpi-card"><div class="kpi-val">$253M</div><div class="kpi-lbl">Total Revenue</div><div class="kpi-sub">Fare + tips + surcharges</div></div>
+    <div class="kpi-card"><div class="kpi-val">$27.50</div><div class="kpi-lbl">Avg Fare</div><div class="kpi-sub">Per trip</div></div>
+    <div class="kpi-card"><div class="kpi-val">78%</div><div class="kpi-lbl">Credit Card</div><div class="kpi-sub">Payment type</div></div>
+    <div class="kpi-card"><div class="kpi-val">666K</div><div class="kpi-lbl">Peak Hour Trips</div><div class="kpi-sub">6 PM daily</div></div>
+    <div class="kpi-card"><div class="kpi-val">57</div><div class="kpi-lbl">Msgs/sec Kafka</div><div class="kpi-sub">Streaming throughput</div></div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div><div class="chart-title">⏰ Hourly Trip Volume</div><div class="chart-sub">Average trips per hour across Jan–Mar 2024</div></div>
+        <span class="chart-badge">line chart</span>
+      </div>
+      <canvas id="hourlyChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div><div class="chart-title">💳 Payment Distribution</div><div class="chart-sub">Breakdown by payment type</div></div>
+        <span class="chart-badge">doughnut</span>
+      </div>
+      <canvas id="paymentChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-grid-3">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div><div class="chart-title">📅 Daily Revenue Trend</div><div class="chart-sub">Total revenue per day Jan–Mar 2024</div></div>
+        <span class="chart-badge">area chart</span>
+      </div>
+      <canvas id="revenueChart" height="160"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div><div class="chart-title">🗺️ Top Pickup Zones</div><div class="chart-sub">Trips by location</div></div>
+        <span class="chart-badge">bar chart</span>
+      </div>
+      <canvas id="zoneChart" height="160"></canvas>
+    </div>
+  </div>
+
+  <div class="data-table-wrap">
+    <div class="data-table-header">
+      <div><div class="data-table-title">📍 Top 10 Pickup Locations</div><div class="data-table-sub">DuckDB query · GROUP BY pickup_location_id · ORDER BY trips DESC</div></div>
+      <span class="chart-badge">DuckDB SQL</span>
+    </div>
+    <table class="data-table">
+      <tr><th>#</th><th>Location</th><th>Zone</th><th>Trips</th><th>Avg Fare</th><th>Share</th></tr>
+      <tr><td>01</td><td style="color:#fff;font-weight:500">JFK Airport</td><td style="color:var(--text3)">Queens</td><td class="t-accent">800K</td><td class="t-blue">$52.40</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:100%"></div></div></div></td></tr>
+      <tr><td>02</td><td style="color:#fff;font-weight:500">Midtown Center</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">720K</td><td class="t-blue">$18.20</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:90%"></div></div></div></td></tr>
+      <tr><td>03</td><td style="color:#fff;font-weight:500">Upper East Side N</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">640K</td><td class="t-blue">$16.80</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:80%"></div></div></div></td></tr>
+      <tr><td>04</td><td style="color:#fff;font-weight:500">LaGuardia Airport</td><td style="color:var(--text3)">Queens</td><td class="t-accent">580K</td><td class="t-blue">$34.60</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:72%"></div></div></div></td></tr>
+      <tr><td>05</td><td style="color:#fff;font-weight:500">Times Sq/Theatre District</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">520K</td><td class="t-blue">$17.90</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:65%"></div></div></div></td></tr>
+      <tr><td>06</td><td style="color:#fff;font-weight:500">Penn Station/Madison Sq</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">460K</td><td class="t-blue">$19.20</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:57%"></div></div></div></td></tr>
+      <tr><td>07</td><td style="color:#fff;font-weight:500">Upper West Side S</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">410K</td><td class="t-blue">$15.60</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:51%"></div></div></div></td></tr>
+      <tr><td>08</td><td style="color:#fff;font-weight:500">Grand Central</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">380K</td><td class="t-blue">$21.40</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:47%"></div></div></div></td></tr>
+      <tr><td>09</td><td style="color:#fff;font-weight:500">Lenox Hill West</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">340K</td><td class="t-blue">$14.80</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:42%"></div></div></div></td></tr>
+      <tr><td>10</td><td style="color:#fff;font-weight:500">TriBeCa/Civic Center</td><td style="color:var(--text3)">Manhattan</td><td class="t-accent">290K</td><td class="t-blue">$22.10</td><td><div class="bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:36%"></div></div></div></td></tr>
+    </table>
+  </div>
+
+  <div class="sql-card">
+    <div class="sql-header">
+      <div class="sql-title">duckdb · nyc_trips · sample queries</div>
+      <span class="sql-badge">DuckDB SQL</span>
+    </div>
+    <div class="sql-body">
+<span class="cmt">-- Total revenue and trips</span><br>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> <span class="str">total_trips</span>, <span class="fn">SUM</span>(<span class="col">total_amount</span>) <span class="kw">AS</span> <span class="str">total_revenue</span> <span class="kw">FROM</span> <span class="col">trips</span>;<br><br>
+<span class="cmt">-- Peak hour analysis</span><br>
+<span class="kw">SELECT</span> <span class="fn">HOUR</span>(<span class="col">tpep_pickup_datetime</span>) <span class="kw">AS</span> <span class="str">hour</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> <span class="str">trips</span><br>
+<span class="kw">FROM</span> <span class="col">trips</span> <span class="kw">GROUP BY</span> <span class="str">hour</span> <span class="kw">ORDER BY</span> <span class="str">trips</span> <span class="kw">DESC</span>;<br><br>
+<span class="cmt">-- Payment distribution</span><br>
+<span class="kw">SELECT</span> <span class="col">payment_type</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> <span class="str">trips</span>, <span class="fn">ROUND</span>(<span class="fn">COUNT</span>(*)*<span class="str">100.0</span>/<span class="fn">SUM</span>(<span class="fn">COUNT</span>(*)) <span class="kw">OVER</span>(),<span class="str">1</span>) <span class="kw">AS</span> <span class="str">pct</span><br>
+<span class="kw">FROM</span> <span class="col">trips</span> <span class="kw">GROUP BY</span> <span class="col">payment_type</span> <span class="kw">ORDER BY</span> <span class="str">trips</span> <span class="kw">DESC</span>;
+    </div>
+  </div>
+</div>
+<script>
+const grid={plugins:{legend:{labels:{color:'#999',font:{family:'Fira Code',size:11}}}},scales:{x:{ticks:{color:'#555',font:{family:'Fira Code',size:10}},grid:{color:'#1e1e1e'}},y:{ticks:{color:'#555',font:{family:'Fira Code',size:10}},grid:{color:'#1e1e1e'}}}};
+const hours=Array.from({length:24},(_,i)=>`${i}:00`);
+const tripsByHour=[180,120,95,75,65,80,140,280,420,380,340,360,390,410,430,460,520,666,620,580,520,460,380,280];
+new Chart(document.getElementById('hourlyChart'),{type:'line',data:{labels:hours,datasets:[{label:'Avg Trips',data:tripsByHour,borderColor:'#f5c518',backgroundColor:'rgba(245,197,24,0.08)',fill:true,tension:.4,pointRadius:2,pointBackgroundColor:'#f5c518'}]},options:{...grid,plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('paymentChart'),{type:'doughnut',data:{labels:['Credit Card','Cash','No Charge','Dispute'],datasets:[{data:[78,19,2,1],backgroundColor:['#f5c518','#60a5fa','#22c55e','#f87171'],borderColor:'#161616',borderWidth:3,hoverOffset:8}]},options:{plugins:{legend:{position:'right',labels:{color:'#999',font:{family:'Fira Code',size:11},padding:12,boxWidth:12}}},cutout:'65%'}});
+const days=Array.from({length:90},(_,i)=>{const d=new Date(2024,0,1);d.setDate(d.getDate()+i);return `${d.getMonth()+1}/${d.getDate()}`;});
+const revenue=days.map(()=>Math.floor(2600000+Math.random()*800000));
+new Chart(document.getElementById('revenueChart'),{type:'line',data:{labels:days.filter((_,i)=>i%5===0),datasets:[{label:'Daily Revenue',data:revenue.filter((_,i)=>i%5===0),borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.08)',fill:true,tension:.4,pointRadius:1}]},options:{...grid,plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('zoneChart'),{type:'bar',data:{labels:['JFK','Midtown','UES N','LGA','Times Sq','Penn St'],datasets:[{label:'Trips (K)',data:[800,720,640,580,520,460],backgroundColor:'rgba(245,197,24,0.7)',borderColor:'#f5c518',borderWidth:1,borderRadius:4}]},options:{...grid,plugins:{legend:{display:false}}}});
+</script>
+</body>
+</html>
