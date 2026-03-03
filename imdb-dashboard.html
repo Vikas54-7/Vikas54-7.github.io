@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMDb Pipeline — Dashboard | Vikas Pabba</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0d0d0d;--surface:#161616;--surface2:#1c1c1c;--border:#222;--border2:#2a2a2a;
+  --text:#e8e8e8;--text2:#999;--text3:#555;
+  --accent:#f5c518;--green:#22c55e;--blue:#60a5fa;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--cyan:#22d3ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 32px}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center}
+.nav-back{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text2);font-size:13px;transition:color .2s}
+.nav-back:hover{color:var(--accent)}
+.nav-title{font-family:'Fira Code',monospace;font-size:12px;color:var(--text3)}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);font-family:'Fira Code',monospace}
+.live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite;display:inline-block}
+
+.hero-bar{max-width:1200px;margin:80px auto 0;padding:40px 32px 32px;border-bottom:1px solid var(--border)}
+.back-crumb{font-size:12px;color:var(--text3);font-family:'Fira Code',monospace;margin-bottom:14px}
+.back-crumb a{color:var(--text3);text-decoration:none}
+.back-crumb a:hover{color:var(--accent)}
+.page-title{font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-1.5px;color:#fff;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:13px;color:var(--text2);font-family:'Fira Code',monospace;margin-bottom:20px}
+.page-links{display:flex;gap:10px;flex-wrap:wrap}
+.pl{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;font-size:12px;text-decoration:none;border:1px solid var(--border2);color:var(--text2);transition:all .2s}
+.pl:hover,.pl.primary{border-color:var(--accent);color:var(--accent);background:rgba(245,197,24,0.06)}
+
+.wrap{max-width:1200px;margin:0 auto;padding:40px 32px}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:40px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 18px;transition:border-color .2s}
+.kpi-card:hover{border-color:var(--border2)}
+.kpi-card.accent-card{border-color:rgba(245,197,24,0.2);background:rgba(245,197,24,0.04)}
+.kpi-val{font-family:'Fira Code',monospace;font-size:28px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:4px}
+.kpi-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* CHART GRID */
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-grid-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s}
+.chart-card:hover{border-color:var(--border2)}
+.chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.chart-title{font-size:14px;font-weight:600;color:#fff}
+.chart-sub{font-size:11px;color:var(--text3);margin-top:3px;font-family:'Fira Code',monospace}
+.chart-badge{padding:3px 10px;border-radius:20px;font-size:10px;border:1px solid var(--border2);color:var(--text3);font-family:'Fira Code',monospace}
+.chart-wrap{position:relative}
+
+/* DATA TABLE */
+.data-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.data-table-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.data-table-title{font-size:14px;font-weight:600;color:#fff}
+.data-table-sub{font-size:11px;color:var(--text3);font-family:'Fira Code',monospace}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{background:var(--surface2);font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.data-table td{font-size:13px;padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface2)}
+.rank{font-family:'Fira Code',monospace;font-size:11px;color:var(--text3);width:32px}
+.movie-title{color:var(--text);font-weight:500}
+.rating-val{color:var(--accent);font-family:'Fira Code',monospace;font-weight:600}
+.votes-val{font-family:'Fira Code',monospace;font-size:12px}
+.rating-bar-wrap{display:flex;align-items:center;gap:10px}
+.rating-bar{height:4px;background:rgba(245,197,24,0.15);border-radius:2px;flex:1;overflow:hidden}
+.rating-bar-fill{height:100%;background:var(--accent);border-radius:2px}
+
+/* DQ PANEL */
+.dq-panel{background:var(--surface);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:24px;margin-bottom:16px}
+.dq-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.dq-title{font-size:14px;font-weight:600;color:#fff}
+.dq-pass-badge{padding:4px 12px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);font-size:11px;color:var(--green);font-family:'Fira Code',monospace}
+.dq-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.dq-rule{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.dq-icon{font-size:18px;flex-shrink:0}
+.dq-rule-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.dq-rule-detail{font-size:11px;color:var(--text3)}
+.dq-rule-result{margin-left:auto;font-family:'Fira Code',monospace;font-size:13px;font-weight:600;color:var(--green)}
+
+/* ATHENA SQL */
+.sql-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.sql-header{padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.sql-title{font-size:12px;color:var(--text2);font-family:'Fira Code',monospace}
+.sql-badge{font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-family:'Fira Code',monospace}
+.sql-body{padding:20px;font-family:'Fira Code',monospace;font-size:12px;line-height:2;overflow-x:auto}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#86efac}.col{color:#e8e8e8}.cmt{color:#555}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@media(max-width:768px){.chart-grid-2,.chart-grid-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-back">← Back to Portfolio</a>
+    <div class="live-dot">Athena · Grafana Connected</div>
+  </div>
+</nav>
+
+<div class="hero-bar">
+  <div class="back-crumb"><a href="index.html">vikas54-7.github.io</a> / <a href="index.html#projects">projects</a> / imdb-dashboard</div>
+  <div class="page-title">🎬 IMDb Analytics <em>Dashboard</em></div>
+  <div class="page-sub">339,781 movies · Amazon Athena · Grafana · Last run: March 2, 2026</div>
+  <div class="page-links">
+    <a href="https://github.com/Vikas54-7/imdb-aws-pipeline" target="_blank" class="pl primary">GitHub →</a>
+    <a href="imdb-architecture.html" class="pl">Architecture →</a>
+    <a href="https://datasets.imdbws.com/" target="_blank" class="pl">Dataset →</a>
+    <a href="index.html#projects" class="pl">← Projects</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card accent-card">
+      <div class="kpi-val">12.3M</div>
+      <div class="kpi-lbl">Raw Records</div>
+      <div class="kpi-sub">title.basics.tsv.gz</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">339,781</div>
+      <div class="kpi-lbl">Clean Movies</div>
+      <div class="kpi-sub">After DQ + join</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">100%</div>
+      <div class="kpi-lbl">DQ Pass Rate</div>
+      <div class="kpi-sub">2 quarantined</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">9.0</div>
+      <div class="kpi-lbl">Top Rating</div>
+      <div class="kpi-sub">The Shawshank Redemption</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">7</div>
+      <div class="kpi-lbl">Decades Covered</div>
+      <div class="kpi-sub">1960s – 2020s</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">~$0.15</div>
+      <div class="kpi-lbl">Cost Per Run</div>
+      <div class="kpi-sub">EMR + Glue + Athena</div>
+    </div>
+  </div>
+
+  <!-- TOP 10 MOVIES TABLE -->
+  <div class="data-table-wrap">
+    <div class="data-table-header">
+      <div>
+        <div class="data-table-title">🏆 Top 10 Highest Rated Movies</div>
+        <div class="data-table-sub">Athena query · WHERE numvotes > 100,000 · ORDER BY averagerating DESC</div>
+      </div>
+      <span class="chart-badge">Athena SQL</span>
+    </div>
+    <table class="data-table">
+      <tr><th>#</th><th>Movie Title</th><th>Year</th><th>Rating</th><th>Votes</th><th>Score</th></tr>
+      <tr>
+        <td class="rank">01</td>
+        <td class="movie-title">The Shawshank Redemption</td>
+        <td>1994</td>
+        <td><span class="rating-val">9.3</span></td>
+        <td class="votes-val">2.8M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:93%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">02</td>
+        <td class="movie-title">The Godfather</td>
+        <td>1972</td>
+        <td><span class="rating-val">9.2</span></td>
+        <td class="votes-val">2.0M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:92%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">03</td>
+        <td class="movie-title">The Dark Knight</td>
+        <td>2008</td>
+        <td><span class="rating-val">9.0</span></td>
+        <td class="votes-val">2.8M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:90%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">04</td>
+        <td class="movie-title">The Godfather Part II</td>
+        <td>1974</td>
+        <td><span class="rating-val">9.0</span></td>
+        <td class="votes-val">1.3M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:90%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">05</td>
+        <td class="movie-title">12 Angry Men</td>
+        <td>1957</td>
+        <td><span class="rating-val">9.0</span></td>
+        <td class="votes-val">830K</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:90%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">06</td>
+        <td class="movie-title">Schindler's List</td>
+        <td>1993</td>
+        <td><span class="rating-val">9.0</span></td>
+        <td class="votes-val">1.4M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:90%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">07</td>
+        <td class="movie-title">The Lord of the Rings: ROTK</td>
+        <td>2003</td>
+        <td><span class="rating-val">9.0</span></td>
+        <td class="votes-val">1.9M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:90%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">08</td>
+        <td class="movie-title">Pulp Fiction</td>
+        <td>1994</td>
+        <td><span class="rating-val">8.9</span></td>
+        <td class="votes-val">2.1M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:89%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">09</td>
+        <td class="movie-title">Inception</td>
+        <td>2010</td>
+        <td><span class="rating-val">8.8</span></td>
+        <td class="votes-val">2.4M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:88%"></div></div></div></td>
+      </tr>
+      <tr>
+        <td class="rank">10</td>
+        <td class="movie-title">The Matrix</td>
+        <td>1999</td>
+        <td><span class="rating-val">8.7</span></td>
+        <td class="votes-val">2.0M</td>
+        <td><div class="rating-bar-wrap"><div class="rating-bar"><div class="rating-bar-fill" style="width:87%"></div></div></div></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">📅 Movies Per Decade</div>
+          <div class="chart-sub">COUNT(*) GROUP BY decade · avg rating overlay</div>
+        </div>
+        <span class="chart-badge">bar chart</span>
+      </div>
+      <div class="chart-wrap"><canvas id="decadeChart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">🎬 Top Genres by Movie Count</div>
+          <div class="chart-sub">WHERE genres NOT LIKE '%,%' · single-genre only</div>
+        </div>
+        <span class="chart-badge">pie chart</span>
+      </div>
+      <div class="chart-wrap"><canvas id="genreChart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 -->
+  <div class="chart-grid-3">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">⭐ Rating Distribution</div>
+          <div class="chart-sub">ROUND(averagerating, 0) GROUP BY rating bucket</div>
+        </div>
+        <span class="chart-badge">histogram</span>
+      </div>
+      <div class="chart-wrap"><canvas id="ratingChart" height="160"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">📊 Avg Rating by Genre</div>
+          <div class="chart-sub">Top 8 genres · avg rating</div>
+        </div>
+        <span class="chart-badge">bar chart</span>
+      </div>
+      <div class="chart-wrap"><canvas id="genreRatingChart" height="160"></canvas></div>
+    </div>
+  </div>
+
+  <!-- DQ PANEL -->
+  <div class="dq-panel">
+    <div class="dq-header">
+      <div class="data-table-title">✅ Data Quality Results — Last Run March 2, 2026</div>
+      <span class="dq-pass-badge">100% PASS RATE</span>
+    </div>
+    <div class="dq-rules">
+      <div class="dq-rule">
+        <div class="dq-icon">⭐</div>
+        <div>
+          <div class="dq-rule-name">Rating Range</div>
+          <div class="dq-rule-detail">averagerating BETWEEN 1.0 AND 10.0</div>
+        </div>
+        <div class="dq-rule-result">✓ PASS</div>
+      </div>
+      <div class="dq-rule">
+        <div class="dq-icon">🗳️</div>
+        <div>
+          <div class="dq-rule-name">Vote Count</div>
+          <div class="dq-rule-detail">numvotes > 0</div>
+        </div>
+        <div class="dq-rule-result">✓ PASS</div>
+      </div>
+      <div class="dq-rule">
+        <div class="dq-icon">📝</div>
+        <div>
+          <div class="dq-rule-name">Title Completeness</div>
+          <div class="dq-rule-detail">primarytitle IS NOT NULL</div>
+        </div>
+        <div class="dq-rule-result">✓ PASS</div>
+      </div>
+      <div class="dq-rule">
+        <div class="dq-icon">🔑</div>
+        <div>
+          <div class="dq-rule-name">ID Integrity</div>
+          <div class="dq-rule-detail">tconst IS NOT NULL</div>
+        </div>
+        <div class="dq-rule-result">✓ PASS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATHENA SQL -->
+  <div class="sql-card">
+    <div class="sql-header">
+      <div class="sql-title">athena · imdb_pipeline.movies · sample queries</div>
+      <span class="sql-badge">Amazon Athena SQL</span>
+    </div>
+    <div class="sql-body">
+<span class="cmt">-- Panel 1: Top 10 Highest Rated Movies</span><br>
+<span class="kw">SELECT</span> <span class="col">primarytitle</span> <span class="kw">AS</span> <span class="str">"Movie"</span>, <span class="col">averagerating</span> <span class="kw">AS</span> <span class="str">"Rating"</span>, <span class="fn">CAST</span>(<span class="col">numvotes</span> <span class="kw">AS</span> INTEGER) <span class="kw">AS</span> <span class="str">"Votes"</span><br>
+<span class="kw">FROM</span> <span class="col">imdb_pipeline.movies</span> <span class="kw">WHERE</span> <span class="col">numvotes</span> > <span class="str">100000</span> <span class="kw">ORDER BY</span> <span class="col">averagerating</span> <span class="kw">DESC LIMIT</span> <span class="str">10</span>;<br><br>
+<span class="cmt">-- Panel 2: Movies Per Decade</span><br>
+<span class="kw">SELECT</span> <span class="fn">CONCAT</span>(<span class="fn">SUBSTRING</span>(<span class="col">startyear</span>,<span class="str">1</span>,<span class="str">3</span>),<span class="str">'0s'</span>) <span class="kw">AS</span> <span class="str">"Decade"</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> <span class="str">"Movies"</span>, <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="col">averagerating</span>),<span class="str">2</span>) <span class="kw">AS</span> <span class="str">"Avg Rating"</span><br>
+<span class="kw">FROM</span> <span class="col">imdb_pipeline.movies</span> <span class="kw">WHERE</span> <span class="col">startyear</span> <span class="kw">IS NOT NULL GROUP BY</span> <span class="fn">SUBSTRING</span>(<span class="col">startyear</span>,<span class="str">1</span>,<span class="str">3</span>) <span class="kw">ORDER BY</span> <span class="str">"Decade"</span>;<br><br>
+<span class="cmt">-- Panel 3: Top Genres</span><br>
+<span class="kw">SELECT</span> <span class="col">genres</span> <span class="kw">AS</span> <span class="str">"Genre"</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> <span class="str">"Movies"</span> <span class="kw">FROM</span> <span class="col">imdb_pipeline.movies</span><br>
+<span class="kw">WHERE</span> <span class="col">genres</span> != <span class="str">'\N'</span> <span class="kw">AND</span> <span class="col">genres</span> <span class="kw">NOT LIKE</span> <span class="str">'%,%'</span> <span class="kw">GROUP BY</span> <span class="col">genres</span> <span class="kw">ORDER BY</span> <span class="str">"Movies"</span> <span class="kw">DESC LIMIT</span> <span class="str">10</span>;
+    </div>
+  </div>
+
+</div>
+
+<script>
+const chartDefaults = {
+  plugins:{ legend:{ labels:{ color:'#999', font:{ family:'Fira Code', size:11 } } } },
+  scales:{
+    x:{ ticks:{ color:'#555', font:{ family:'Fira Code', size:10 } }, grid:{ color:'#1e1e1e' } },
+    y:{ ticks:{ color:'#555', font:{ family:'Fira Code', size:10 } }, grid:{ color:'#1e1e1e' } }
+  }
+};
+
+// DECADE CHART
+new Chart(document.getElementById('decadeChart'), {
+  type:'bar',
+  data:{
+    labels:['1960s','1970s','1980s','1990s','2000s','2010s','2020s'],
+    datasets:[
+      { label:'Movies', data:[4200,8900,14300,22100,58400,112000,89000],
+        backgroundColor:'rgba(245,197,24,0.7)', borderColor:'#f5c518', borderWidth:1, borderRadius:4, yAxisID:'y' },
+      { label:'Avg Rating', data:[7.1,6.9,6.8,6.7,6.6,6.5,6.4],
+        type:'line', borderColor:'#60a5fa', backgroundColor:'rgba(96,165,250,0.1)',
+        borderWidth:2, pointRadius:4, pointBackgroundColor:'#60a5fa', yAxisID:'y1', tension:.4 }
+    ]
+  },
+  options:{...chartDefaults,
+    scales:{
+      x:{ ticks:{ color:'#555', font:{family:'Fira Code',size:10} }, grid:{color:'#1e1e1e'} },
+      y:{ ticks:{ color:'#555', font:{family:'Fira Code',size:10} }, grid:{color:'#1e1e1e'}, title:{display:true,text:'Movie Count',color:'#555',font:{size:10}} },
+      y1:{ position:'right', ticks:{ color:'#60a5fa', font:{family:'Fira Code',size:10} }, grid:{display:false},
+           title:{display:true,text:'Avg Rating',color:'#60a5fa',font:{size:10}}, min:5, max:8 }
+    }
+  }
+});
+
+// GENRE PIE
+new Chart(document.getElementById('genreChart'), {
+  type:'doughnut',
+  data:{
+    labels:['Drama','Comedy','Horror','Action','Romance','Thriller','Crime','Animation'],
+    datasets:[{ data:[89400,72100,34200,28900,24100,19800,17300,8900],
+      backgroundColor:['#f5c518','#60a5fa','#f87171','#fb923c','#a78bfa','#22d3ee','#86efac','#fbbf24'],
+      borderColor:'#161616', borderWidth:3, hoverOffset:8 }]
+  },
+  options:{
+    plugins:{ legend:{ position:'right', labels:{ color:'#999', font:{family:'Fira Code',size:10}, padding:12, boxWidth:12 } } },
+    cutout:'65%'
+  }
+});
+
+// RATING DISTRIBUTION
+new Chart(document.getElementById('ratingChart'), {
+  type:'bar',
+  data:{
+    labels:['1','2','3','4','5','6','7','8','9','10'],
+    datasets:[{ label:'Movies', data:[120,890,2340,7800,18900,52100,98400,112000,43100,6200],
+      backgroundColor: ctx => {
+        const v = ctx.parsed?.y || 0;
+        if(v > 80000) return 'rgba(245,197,24,0.85)';
+        if(v > 40000) return 'rgba(245,197,24,0.55)';
+        return 'rgba(245,197,24,0.25)';
+      },
+      borderColor:'#f5c518', borderWidth:1, borderRadius:3 }]
+  },
+  options:{...chartDefaults, plugins:{legend:{display:false}}}
+});
+
+// GENRE RATING BAR
+new Chart(document.getElementById('genreRatingChart'), {
+  type:'bar',
+  data:{
+    labels:['Documentary','Animation','Crime','Drama','Thriller','Action','Comedy','Horror'],
+    datasets:[{ label:'Avg Rating', data:[7.4,7.1,7.0,6.9,6.8,6.6,6.3,5.8],
+      backgroundColor:'rgba(96,165,250,0.7)', borderColor:'#60a5fa',
+      borderWidth:1, borderRadius:4, indexAxis:'y' }]
+  },
+  options:{
+    indexAxis:'y',
+    plugins:{ legend:{ display:false } },
+    scales:{
+      x:{ ticks:{color:'#555',font:{family:'Fira Code',size:10}}, grid:{color:'#1e1e1e'}, min:5, max:8 },
+      y:{ ticks:{color:'#999',font:{family:'Fira Code',size:10}}, grid:{display:false} }
+    }
+  }
+});
+</script>
+</body>
+</html>
