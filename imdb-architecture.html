@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMDb Pipeline — Architecture | Vikas Pabba</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0d;--surface:#161616;--surface2:#1c1c1c;--border:#222;--border2:#2a2a2a;
+  --text:#e8e8e8;--text2:#999;--text3:#555;
+  --accent:#f5c518;--green:#22c55e;--blue:#60a5fa;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--cyan:#22d3ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 32px}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center}
+.nav-back{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text2);font-size:13px;transition:color .2s}
+.nav-back:hover{color:var(--accent)}
+.nav-title{font-family:'Fira Code',monospace;font-size:12px;color:var(--text3)}
+
+.hero-bar{max-width:1200px;margin:80px auto 0;padding:48px 32px 40px;border-bottom:1px solid var(--border)}
+.back-crumb{font-size:12px;color:var(--text3);font-family:'Fira Code',monospace;margin-bottom:16px}
+.back-crumb a{color:var(--text3);text-decoration:none}
+.back-crumb a:hover{color:var(--accent)}
+.page-title{font-size:clamp(32px,5vw,52px);font-weight:700;letter-spacing:-2px;color:#fff;margin-bottom:8px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--text2);font-family:'Fira Code',monospace;margin-bottom:24px}
+.page-tags{display:flex;gap:8px;flex-wrap:wrap}
+.page-tag{padding:4px 12px;border-radius:3px;font-size:11px;font-family:'Fira Code',monospace;border:1px solid var(--border2);color:var(--text3)}
+.page-tag.hl{border-color:rgba(245,197,24,0.3);color:var(--accent)}
+
+.wrap{max-width:1200px;margin:0 auto;padding:48px 32px}
+
+/* STATS BAR */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:48px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.stat-card:hover{border-color:var(--border2)}
+.stat-val{font-family:'Fira Code',monospace;font-size:26px;font-weight:700;color:var(--accent);display:block}
+.stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+
+/* ARCH OVERVIEW */
+.section-label{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:6px}
+.section-title{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:24px}
+
+/* FLOW DIAGRAM */
+.flow-diagram{display:flex;flex-direction:column;gap:4px;margin-bottom:48px}
+.flow-stage{border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.flow-stage:hover{border-color:var(--s-color,var(--border2))}
+.flow-stage.active{border-color:var(--s-color,var(--accent))}
+.stage-row{display:grid;grid-template-columns:52px 1fr auto;align-items:stretch}
+.stage-num{background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:18px;font-weight:700;color:var(--s-color,var(--text3));border-right:1px solid var(--border);padding:16px 0;min-width:52px}
+.stage-body{padding:16px 20px;background:var(--bg)}
+.stage-where{font-size:9px;letter-spacing:3px;color:var(--s-color,var(--text3));text-transform:uppercase;font-family:'Fira Code',monospace;margin-bottom:3px}
+.stage-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.stage-desc{font-size:12px;color:var(--text3)}
+.stage-cost{padding:0 20px;display:flex;align-items:center;background:var(--bg);border-left:1px solid var(--border)}
+.cost-pill{padding:4px 10px;border-radius:20px;font-size:10px;font-family:'Fira Code',monospace;border:1px solid var(--border2);color:var(--text3);white-space:nowrap}
+.cost-free{border-color:rgba(34,197,94,0.3);color:var(--green);background:rgba(34,197,94,0.06)}
+.cost-tiny{border-color:rgba(245,197,24,0.3);color:var(--accent);background:rgba(245,197,24,0.06)}
+
+/* DETAIL PANEL */
+.detail-panel{display:none;background:var(--surface2);border-top:1px solid var(--border);padding:20px 24px;animation:slideIn .15s ease}
+.detail-panel.open{display:block}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:14px}
+.detail-item h4{font-size:9px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;font-family:'Fira Code',monospace;margin-bottom:6px}
+.detail-item p{font-size:12px;color:var(--text2);line-height:1.7}
+.detail-item code{background:rgba(245,197,24,0.08);color:var(--accent);padding:1px 6px;border-radius:3px;font-size:11px;font-family:'Fira Code',monospace}
+.interview-line{background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:6px;padding:12px 16px;font-size:12px;color:var(--text2);line-height:1.7;font-style:italic}
+.interview-line::before{content:'🎤 ';font-style:normal}
+.flow-arrow{display:flex;align-items:center;justify-content:center;height:20px;color:var(--border2);font-size:14px}
+
+/* LAYERS SECTION */
+.layers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:48px}
+.layer-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;transition:all .2s}
+.layer-card:hover{border-color:var(--l-color,var(--border2));transform:translateY(-2px)}
+.layer-card::before{content:'';display:block;height:2px;background:var(--l-color,var(--border2));border-radius:1px;margin-bottom:16px}
+.layer-icon{font-size:22px;margin-bottom:8px}
+.layer-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:6px}
+.layer-items{display:flex;flex-direction:column;gap:5px}
+.layer-item{font-size:12px;color:var(--text3);display:flex;gap:8px;align-items:flex-start}
+.layer-item::before{content:'→';color:var(--l-color,var(--text3));flex-shrink:0;font-size:10px;margin-top:2px}
+
+/* COST TABLE */
+.cost-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:48px}
+.cost-table{width:100%;border-collapse:collapse}
+.cost-table th{background:var(--surface2);font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.cost-table td{font-size:13px;padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)}
+.cost-table tr:last-child td{border-bottom:none}
+.cost-table tr:hover td{background:var(--surface2)}
+.c-free{color:var(--green);font-weight:500}
+.c-paid{color:var(--accent);font-weight:500}
+.c-total{color:#fff;font-weight:700}
+
+/* S3 TREE */
+.s3-tree{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px 28px;font-family:'Fira Code',monospace;font-size:13px;line-height:2.2;margin-bottom:48px}
+.t-folder{color:var(--accent)}
+.t-file-good{color:var(--green)}
+.t-file-bad{color:var(--red)}
+.t-file-raw{color:var(--blue)}
+.t-note{color:var(--text3);font-size:11px;margin-left:8px}
+
+/* LINKS BAR */
+.links-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.link-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:6px;font-size:13px;text-decoration:none;border:1px solid var(--border2);color:var(--text2);transition:all .2s}
+.link-btn:hover,.link-btn.primary{border-color:var(--accent);color:var(--accent);background:rgba(245,197,24,0.06)}
+
+@keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:640px){.stage-cost{display:none}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-back">← Back to Portfolio</a>
+    <div class="nav-title">imdb-pipeline / architecture</div>
+  </div>
+</nav>
+
+<div class="hero-bar">
+  <div class="back-crumb"><a href="index.html">vikas54-7.github.io</a> / <a href="index.html#projects">projects</a> / imdb-architecture</div>
+  <div class="page-title">🎬 IMDb Media Data <em>ETL Pipeline</em></div>
+  <div class="page-sub">AWS Batch Architecture · EMR + Glue + Athena + Grafana · March 2026</div>
+  <div class="page-tags">
+    <span class="page-tag hl">Amazon EMR</span>
+    <span class="page-tag hl">PySpark</span>
+    <span class="page-tag hl">AWS Glue</span>
+    <span class="page-tag hl">Amazon Athena</span>
+    <span class="page-tag">EventBridge</span>
+    <span class="page-tag">Lambda</span>
+    <span class="page-tag">Grafana</span>
+    <span class="page-tag">~$0.15/run</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><span class="stat-val">12.3M</span><div class="stat-lbl">Raw Records</div></div>
+    <div class="stat-card"><span class="stat-val">339,781</span><div class="stat-lbl">Clean Movies</div></div>
+    <div class="stat-card"><span class="stat-val">100%</span><div class="stat-lbl">DQ Pass Rate</div></div>
+    <div class="stat-card"><span class="stat-val">2</span><div class="stat-lbl">Quarantined</div></div>
+    <div class="stat-card"><span class="stat-val">&lt;15min</span><div class="stat-lbl">EMR Runtime</div></div>
+    <div class="stat-card"><span class="stat-val">~$0.15</span><div class="stat-lbl">Cost Per Run</div></div>
+  </div>
+
+  <!-- LINKS -->
+  <div class="links-bar">
+    <a href="https://github.com/Vikas54-7/imdb-aws-pipeline" target="_blank" class="link-btn primary">GitHub Repository →</a>
+    <a href="https://datasets.imdbws.com/" target="_blank" class="link-btn">IMDb Dataset →</a>
+    <a href="imdb-dashboard.html" class="link-btn">View Dashboard →</a>
+    <a href="index.html#projects" class="link-btn">← Back to Projects</a>
+  </div>
+
+  <!-- FLOW DIAGRAM -->
+  <div class="section-label">Pipeline Flow</div>
+  <div class="section-title">End-to-End Architecture — Click Each Stage</div>
+  <div class="flow-diagram">
+
+    <div class="flow-stage" style="--s-color:#60a5fa;" onclick="toggle(this,'d1')">
+      <div class="stage-row">
+        <div class="stage-num">01</div>
+        <div class="stage-body">
+          <div class="stage-where">IMDb Website → Your Laptop</div>
+          <div class="stage-name">Download IMDb Datasets</div>
+          <div class="stage-desc">title.basics.tsv.gz (800MB) · title.ratings.tsv.gz (25MB)</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-free">FREE</span></div>
+      </div>
+      <div class="detail-panel" id="d1">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Source</h4><p>IMDb publishes free datasets at <code>datasets.imdbws.com</code> — updated daily. No API key, no signup needed.</p></div>
+          <div class="detail-item"><h4>Files</h4><p><code>title.basics</code> — 12.3M+ titles, all metadata. <code>title.ratings</code> — 1.64M records with averagerating + numvotes.</p></div>
+          <div class="detail-item"><h4>Format</h4><p>Tab-separated TSV compressed GZIP. IMDb uses literal <code>\N</code> instead of NULL — requires special handling in pipeline.</p></div>
+        </div>
+        <div class="interview-line">"We used IMDb's free public dataset — 12.3M+ records updated daily. The \N null convention required special replacement logic that standard parsers miss."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#fb923c;" onclick="toggle(this,'d2')">
+      <div class="stage-row">
+        <div class="stage-num">02</div>
+        <div class="stage-body">
+          <div class="stage-where">Python boto3 → Amazon S3</div>
+          <div class="stage-name">upload_to_s3.py — Raw Zone Ingestion</div>
+          <div class="stage-desc">Date-partitioned upload → s3://imdb-pipeline-vikas/raw/imdb/YYYY/MM/DD/</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-free">FREE</span></div>
+      </div>
+      <div class="detail-panel" id="d2">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Script</h4><p><code>upload_to_s3.py</code> uses <code>boto3.upload_file()</code> with progress logging. Reads from local <code>data/</code> folder.</p></div>
+          <div class="detail-item"><h4>S3 Path</h4><p><code>s3://imdb-pipeline-vikas/raw/imdb/2026/03/02/</code> — date partition isolates each batch for reprocessing any historical date.</p></div>
+          <div class="detail-item"><h4>Cost</h4><p>S3 free tier: 5GB storage. Two files = ~825MB = $0.02/month. PUT requests = fractions of a cent.</p></div>
+        </div>
+        <div class="interview-line">"Raw files land in date-partitioned S3 — we can always reprocess any day by pointing the pipeline at a specific partition without touching other data."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#22c55e;" onclick="toggle(this,'d3')">
+      <div class="stage-row">
+        <div class="stage-num">03</div>
+        <div class="stage-body">
+          <div class="stage-where">Amazon EMR 7.2.0 · m5.xlarge × 2</div>
+          <div class="stage-name">imdb_spark_etl.py — PySpark Distributed ETL</div>
+          <div class="stage-desc">Read → Clean \N → Filter movies → Join → DQ → Write Parquet</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-tiny">~$0.10</span></div>
+      </div>
+      <div class="detail-panel" id="d3">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Step 1 — Read</h4><p>Spark reads TSV.GZ directly from S3 into distributed DataFrames across cluster nodes. No local files needed.</p></div>
+          <div class="detail-item"><h4>Step 2 — Clean</h4><p>Replace <code>\N</code> with null using Spark <code>when(col == "\\N", None)</code>. Filter <code>titletype == "movie"</code> only.</p></div>
+          <div class="detail-item"><h4>Step 3 — Join</h4><p>Inner join basics + ratings on <code>tconst</code>. Only movies with both metadata AND ratings kept — 738K → 339K.</p></div>
+          <div class="detail-item"><h4>Step 4 — DQ</h4><p>4 rules as boolean mask: rating 1-10, votes > 0, title not null, tconst not null. Split into passed/failed DataFrames.</p></div>
+          <div class="detail-item"><h4>Step 5 — Write</h4><p>Passed → Snappy Parquet to <code>processed/movies/</code>. Failed → JSON to <code>quarantine/movies/</code>.</p></div>
+          <div class="detail-item"><h4>Cluster Config</h4><p>EMR 7.2.0, Spark + Hadoop. m5.xlarge × 2 On-Demand nodes. Terminated immediately after job = $0.10 total.</p></div>
+        </div>
+        <div class="interview-line">"PySpark on EMR distributes the 12.3M record job across 2 nodes — each executor processes a partition independently. When data grows to 100GB+, we scale nodes without changing code."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#f5c518;" onclick="toggle(this,'d4')">
+      <div class="stage-row">
+        <div class="stage-num">04</div>
+        <div class="stage-body">
+          <div class="stage-where">Amazon S3 — Processed Zone</div>
+          <div class="stage-name">Snappy Parquet Output</div>
+          <div class="stage-desc">part-00000.snappy.parquet → columnar, 10x cheaper for Athena</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-free">~$0.02/mo</span></div>
+      </div>
+      <div class="detail-panel" id="d4">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Why Parquet</h4><p>Columnar storage — Athena reads only requested columns. 10x less data scanned = 10x cheaper than CSV.</p></div>
+          <div class="detail-item"><h4>Snappy compression</h4><p>~60% smaller than uncompressed. Fast decompression. Industry standard for Spark/Athena analytical workloads.</p></div>
+          <div class="detail-item"><h4>3-Zone Architecture</h4><p><code>raw/</code> landing zone · <code>processed/</code> serving zone · <code>quarantine/</code> investigation zone. Clear data lineage at each stage.</p></div>
+        </div>
+        <div class="interview-line">"Writing Parquet instead of CSV reduced Athena query costs by 10x — Athena charges per TB scanned and columnar format only reads relevant columns."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#60a5fa;" onclick="toggle(this,'d5')">
+      <div class="stage-row">
+        <div class="stage-num">05</div>
+        <div class="stage-body">
+          <div class="stage-where">AWS Glue</div>
+          <div class="stage-name">Glue Crawler → Data Catalog</div>
+          <div class="stage-desc">Auto-detects Parquet schema → updates Hive Metastore</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-tiny">~$0.01</span></div>
+      </div>
+      <div class="detail-panel" id="d5">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Glue Crawler</h4><p>Scans <code>s3://imdb-pipeline-vikas/processed/movies/</code> after each ETL run — auto-detects all column names, types, and partitions.</p></div>
+          <div class="detail-item"><h4>Glue Data Catalog</h4><p>Acts as central Hive Metastore — both EMR Spark and Athena share schema definitions. Single source of truth.</p></div>
+          <div class="detail-item"><h4>Auto-triggered</h4><p>PySpark job calls <code>glue.start_crawler()</code> via boto3 after writing Parquet — zero manual intervention needed.</p></div>
+        </div>
+        <div class="interview-line">"Glue Data Catalog is the Hive Metastore of our data lake — schema defined once, shared across all query engines. Adding Redshift Spectrum later requires zero schema migration."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#22d3ee;" onclick="toggle(this,'d6')">
+      <div class="stage-row">
+        <div class="stage-num">06</div>
+        <div class="stage-body">
+          <div class="stage-where">Amazon Athena</div>
+          <div class="stage-name">Serverless SQL Analytics</div>
+          <div class="stage-desc">External table on S3 Parquet → top movies, genre trends, decade analysis</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-free">~$0.001</span></div>
+      </div>
+      <div class="detail-panel" id="d6">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>External Table</h4><p>Athena doesn't store data — reads directly from S3 Parquet via Glue Catalog schema. Zero ETL into separate database.</p></div>
+          <div class="detail-item"><h4>Query Cost</h4><p>$5 per TB scanned. IMDb Parquet = ~100MB. Each query = ~$0.001. Running 100 queries/month = $0.10 total.</p></div>
+          <div class="detail-item"><h4>Sample Queries</h4><p>Top 10 movies by rating, movies per decade, genre popularity, rating distribution — all run in 2-3 seconds.</p></div>
+        </div>
+        <div class="interview-line">"Athena external tables give us serverless SQL on 339K movie records with zero infrastructure — queries run in 2-3 seconds at $0.001 each."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#fb923c;" onclick="toggle(this,'d7')">
+      <div class="stage-row">
+        <div class="stage-num">07</div>
+        <div class="stage-body">
+          <div class="stage-where">Grafana + Docker (localhost:3000)</div>
+          <div class="stage-name">Analytics Dashboard</div>
+          <div class="stage-desc">4 panels connected to Athena → Top movies · Genres · Decades · Ratings</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-free">FREE</span></div>
+      </div>
+      <div class="detail-panel" id="d7">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Setup</h4><p>Grafana runs via Docker on localhost:3000. Amazon Athena plugin connects to AWS with access keys. Queries run directly against S3 Parquet.</p></div>
+          <div class="detail-item"><h4>4 Panels</h4><p>Top 10 highest rated movies (bar). Movies per decade (bar). Genre distribution (pie). Rating distribution (bar).</p></div>
+          <div class="detail-item"><h4>Why Grafana</h4><p>Free forever, open source, more chart types than QuickSight. Dashboard JSON stored in GitHub — fully portable.</p></div>
+        </div>
+        <div class="interview-line">"Grafana on Docker connects directly to Athena — no data movement, no extra storage. Dashboard JSON lives in our GitHub repo for reproducibility."</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-stage" style="--s-color:#a78bfa;" onclick="toggle(this,'d8')">
+      <div class="stage-row">
+        <div class="stage-num">08</div>
+        <div class="stage-body">
+          <div class="stage-where">EventBridge + Lambda + SNS</div>
+          <div class="stage-name">Automated Daily Scheduling</div>
+          <div class="stage-desc">Cron: 0 1 * * ? * → Lambda → Glue Crawler → SNS email</div>
+        </div>
+        <div class="stage-cost"><span class="cost-pill cost-free">FREE</span></div>
+      </div>
+      <div class="detail-panel" id="d8">
+        <div class="detail-grid">
+          <div class="detail-item"><h4>EventBridge</h4><p>Cron rule <code>0 1 * * ? *</code> fires daily at 1 AM UTC — completely serverless, no EC2 needed. Free tier: 14M events/month.</p></div>
+          <div class="detail-item"><h4>Lambda</h4><p>Python 3.12 function triggers Glue Crawler via boto3, sends SNS notification with run status and metrics.</p></div>
+          <div class="detail-item"><h4>SNS Alerts</h4><p>3 alert types: ✅ SUCCESS with DQ metrics, ❌ FAILURE with stack trace, ⚠️ WARNING if DQ rate drops below 95%.</p></div>
+        </div>
+        <div class="interview-line">"EventBridge + Lambda gives us zero-infrastructure scheduling — no Airflow server, no EC2, no maintenance. The entire orchestration layer costs $0/month."</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LAYERS GRID -->
+  <div class="section-label" style="margin-top:48px">Architecture Layers</div>
+  <div class="section-title">5 Distinct Layers</div>
+  <div class="layers-grid">
+    <div class="layer-card" style="--l-color:#60a5fa">
+      <div class="layer-icon">📥</div>
+      <div class="layer-name">Ingestion Layer</div>
+      <div class="layer-items">
+        <div class="layer-item">Python boto3 upload script</div>
+        <div class="layer-item">Date-partitioned S3 raw zone</div>
+        <div class="layer-item">GZIP compressed TSV files</div>
+      </div>
+    </div>
+    <div class="layer-card" style="--l-color:#22c55e">
+      <div class="layer-icon">⚙️</div>
+      <div class="layer-name">Processing Layer</div>
+      <div class="layer-items">
+        <div class="layer-item">EMR 7.2.0 PySpark cluster</div>
+        <div class="layer-item">Distributed ETL + DQ checks</div>
+        <div class="layer-item">Snappy Parquet output</div>
+      </div>
+    </div>
+    <div class="layer-card" style="--l-color:#f5c518">
+      <div class="layer-icon">📋</div>
+      <div class="layer-name">Catalog Layer</div>
+      <div class="layer-items">
+        <div class="layer-item">AWS Glue Crawler</div>
+        <div class="layer-item">Glue Data Catalog (Hive Metastore)</div>
+        <div class="layer-item">Auto schema detection</div>
+      </div>
+    </div>
+    <div class="layer-card" style="--l-color:#22d3ee">
+      <div class="layer-icon">🔍</div>
+      <div class="layer-name">Analytics Layer</div>
+      <div class="layer-items">
+        <div class="layer-item">Amazon Athena serverless SQL</div>
+        <div class="layer-item">Grafana dashboards (Docker)</div>
+        <div class="layer-item">~$0.001 per query</div>
+      </div>
+    </div>
+    <div class="layer-card" style="--l-color:#a78bfa">
+      <div class="layer-icon">🔄</div>
+      <div class="layer-name">Orchestration Layer</div>
+      <div class="layer-items">
+        <div class="layer-item">EventBridge cron (1 AM UTC daily)</div>
+        <div class="layer-item">Lambda trigger function</div>
+        <div class="layer-item">SNS email notifications</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 STRUCTURE -->
+  <div class="section-label">Storage</div>
+  <div class="section-title">S3 Bucket Structure</div>
+  <div class="s3-tree">
+    <div><span class="t-folder">s3://imdb-pipeline-vikas/</span></div>
+    <div>&nbsp;&nbsp;<span class="t-folder">├── raw/imdb/2026/03/02/</span><span class="t-note">← date-partitioned landing zone</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-file-raw">│&nbsp;&nbsp;&nbsp;├── title.basics.tsv.gz</span><span class="t-note">← 208MB compressed, 12.3M rows</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-file-raw">│&nbsp;&nbsp;&nbsp;└── title.ratings.tsv.gz</span><span class="t-note">← 7.9MB compressed, 1.64M rows</span></div>
+    <div>&nbsp;&nbsp;<span class="t-folder">├── processed/movies/</span><span class="t-note">← serving zone, Athena reads here</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-file-good">│&nbsp;&nbsp;&nbsp;└── part-00000.snappy.parquet</span><span class="t-note">← 339,781 clean movies</span></div>
+    <div>&nbsp;&nbsp;<span class="t-folder">├── quarantine/movies/</span><span class="t-note">← failed DQ records</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-file-bad">│&nbsp;&nbsp;&nbsp;└── failed_records.json</span><span class="t-note">← 2 bad records for investigation</span></div>
+    <div>&nbsp;&nbsp;<span class="t-folder">├── scripts/</span><span class="t-note">← PySpark job uploaded here for EMR</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-file-raw">│&nbsp;&nbsp;&nbsp;└── imdb_spark_etl.py</span></div>
+    <div>&nbsp;&nbsp;<span class="t-folder">└── athena-results/</span><span class="t-note">← Athena query output location</span></div>
+  </div>
+
+  <!-- COST TABLE -->
+  <div class="section-label">Cost</div>
+  <div class="section-title">Full Cost Breakdown</div>
+  <div class="cost-table-wrap">
+    <table class="cost-table">
+      <tr><th>Service</th><th>Usage</th><th>Cost/Run</th><th>Cost/Month</th></tr>
+      <tr><td>Amazon S3</td><td>825MB storage + PUT/GET requests</td><td class="c-free">~$0</td><td class="c-free">~$0.02</td></tr>
+      <tr><td>Amazon EMR</td><td>m5.xlarge × 2 nodes × 15 mins</td><td class="c-paid">~$0.10</td><td class="c-paid">~$3.00</td></tr>
+      <tr><td>AWS Glue Crawler</td><td>~1 DPU × 2 mins</td><td class="c-paid">~$0.01</td><td class="c-paid">~$0.30</td></tr>
+      <tr><td>Amazon Athena</td><td>~100MB scanned per query</td><td class="c-free">~$0.001</td><td class="c-free">~$0.10</td></tr>
+      <tr><td>EventBridge</td><td>1 rule, 30 events/month</td><td class="c-free">FREE</td><td class="c-free">FREE</td></tr>
+      <tr><td>AWS Lambda</td><td>1 invocation/day, 30s runtime</td><td class="c-free">FREE</td><td class="c-free">FREE</td></tr>
+      <tr><td>Amazon SNS</td><td>1 email/run</td><td class="c-free">FREE</td><td class="c-free">FREE</td></tr>
+      <tr><td>Grafana (Docker)</td><td>Runs locally on laptop</td><td class="c-free">FREE</td><td class="c-free">FREE</td></tr>
+      <tr><td><strong>TOTAL</strong></td><td></td><td class="c-total">~$0.11</td><td class="c-total">~$3.42</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+function toggle(stage, id){
+  const panel = document.getElementById(id);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.detail-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.flow-stage.active').forEach(s => s.classList.remove('active'));
+  if(!isOpen){ panel.classList.add('open'); stage.classList.add('active'); }
+}
+</script>
+</body>
+</html>
