@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vikas Pabba - Data Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root[data-theme="dark"]{
+  --bg:#0d0d0d;--bg2:#111;--surface:#161616;--surface2:#1c1c1c;
+  --border:#222;--border2:#2a2a2a;
+  --text:#e8e8e8;--text2:#999;--text3:#555;
+  --accent:#f5c518;--accent-dim:rgba(245,197,24,0.12);
+  --green:#22c55e;--green-dim:rgba(34,197,94,0.1);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.1);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.1);
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+:root[data-theme="light"]{
+  --bg:#f8f8f8;--bg2:#fff;--surface:#fff;--surface2:#f4f4f4;
+  --border:#e8e8e8;--border2:#ddd;
+  --text:#111;--text2:#555;--text3:#aaa;
+  --accent:#d4a017;--accent-dim:rgba(212,160,23,0.1);
+  --green:#16a34a;--green-dim:rgba(22,163,74,0.08);
+  --blue:#2563eb;--blue-dim:rgba(37,99,235,0.08);
+  --purple:#7c3aed;--purple-dim:rgba(124,58,237,0.08);
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;transition:background .3s,color .3s}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0}
+[data-theme="light"] nav{background:rgba(248,248,248,0.92)}
+.nav-inner{max-width:1120px;margin:0 auto;padding:0 32px;height:60px;display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-family:'Fira Code',monospace;font-size:13px;color:var(--accent);letter-spacing:1px}
+.nav-links{display:flex;gap:24px;list-style:none;align-items:center}
+.nav-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.theme-toggle{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 10px;cursor:pointer;font-size:14px;color:var(--text2);transition:all .2s}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+
+/* HERO */
+.hero{min-height:100vh;max-width:1120px;margin:0 auto;padding:120px 32px 80px;display:flex;align-items:center}
+.hero-inner{max-width:680px}
+.hero-status{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:28px;font-family:'Fira Code',monospace}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.hero-name{font-size:clamp(52px,8vw,88px);font-weight:700;letter-spacing:-3px;line-height:1;margin-bottom:12px;color:var(--text)}
+.hero-name .accent{color:var(--accent)}
+.hero-role{font-family:'Fira Code',monospace;font-size:15px;color:var(--text2);margin-bottom:20px}
+.hero-bio{font-size:16px;color:var(--text2);line-height:1.8;max-width:560px;margin-bottom:36px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;transition:all .2s;letter-spacing:.3px}
+.cta-primary{background:var(--accent);color:#000}
+.cta-primary:hover{opacity:.9;transform:translateY(-1px)}
+.cta-outline{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.cta-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* SECTION WRAPPER */
+.section-wrap{max-width:1120px;margin:0 auto;padding:80px 32px}
+.sep{width:100%;height:1px;background:var(--border);max-width:1120px;margin:0 auto}
+.section-eyebrow{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:6px}
+.section-heading{font-size:clamp(28px,4vw,38px);font-weight:700;letter-spacing:-1px;margin-bottom:40px}
+
+/* ABOUT */
+.about-layout{display:grid;grid-template-columns:3fr 2fr;gap:56px;align-items:start}
+.about-body{font-size:15px;color:var(--text2);line-height:1.85}
+.about-body p+p{margin-top:14px}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 18px;transition:border-color .2s}
+.metric-box:hover{border-color:var(--accent)}
+.metric-val{font-family:'Fira Code',monospace;font-size:32px;font-weight:700;color:var(--accent);line-height:1}
+.metric-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:6px}
+
+/* EXPERIENCE */
+.exp-stack{display:flex;flex-direction:column;gap:12px}
+.exp-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .25s,box-shadow .25s}
+.exp-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.exp-card-header{padding:24px 28px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.exp-card-header:hover .exp-toggle{color:var(--accent)}
+.exp-left .exp-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:3px}
+.exp-left .exp-company{font-size:13px;color:var(--accent);font-family:'Fira Code',monospace}
+.exp-right{text-align:right;flex-shrink:0}
+.exp-date{font-size:11px;color:var(--text3);font-family:'Fira Code',monospace;margin-bottom:6px}
+.exp-toggle{font-size:18px;color:var(--text3);transition:all .25s;display:block;margin-top:4px}
+.exp-kpis{display:flex;gap:8px;flex-wrap:wrap;padding:0 28px 20px}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;text-align:center;min-width:90px}
+.kpi-val{font-family:'Fira Code',monospace;font-size:15px;font-weight:600;color:var(--accent);display:block}
+.kpi-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.exp-body{padding:0 28px 24px;display:none}
+.exp-body.open{display:block}
+.exp-bullets{display:flex;flex-direction:column;gap:9px}
+.exp-bullet{font-size:13px;color:var(--text2);padding-left:18px;position:relative;line-height:1.65}
+.exp-bullet::before{content:'▸';position:absolute;left:0;color:var(--accent);font-size:10px;top:3px}
+.exp-bullet strong{color:var(--text)}
+.exp-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.exp-tag{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:3px 9px;font-size:10px;color:var(--text3);font-family:'Fira Code',monospace}
+
+/* PROJECTS */
+.proj-filter{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.filter-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.filter-btn:hover,.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:500}
+.proj-grid{display:flex;flex-direction:column;gap:20px}
+.proj-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s}
+.proj-card:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateY(-2px)}
+.proj-card.new-project{border-color:rgba(245,197,24,0.25)}
+.proj-card.new-project .proj-top{border-top:2px solid var(--accent)}
+.proj-top{padding:28px 28px 20px}
+.proj-meta-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.proj-title-block .proj-title{font-size:19px;font-weight:700;color:var(--text);margin-bottom:3px}
+.proj-title-block .proj-title em{color:var(--accent);font-style:normal}
+.proj-domain{font-size:10px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;font-family:'Fira Code',monospace}
+.proj-badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.new-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:20px;padding:3px 10px;font-size:10px;letter-spacing:1px;color:var(--green);text-transform:uppercase}
+.new-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.proj-category-badge{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border)}
+.badge-de{background:var(--blue-dim);border-color:rgba(96,165,250,0.3);color:var(--blue)}
+.badge-ml{background:var(--purple-dim);border-color:rgba(167,139,250,0.3);color:var(--purple)}
+.proj-links-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.proj-link{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;font-size:11px;text-decoration:none;border:1px solid var(--border);color:var(--text2);transition:all .2s;letter-spacing:.3px}
+.proj-link:hover,.proj-link.primary{border-color:var(--accent);color:var(--accent)}
+.proj-link.primary{background:var(--accent-dim)}
+.proj-scale{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px}
+.scale-item{font-size:12px;color:var(--text3);font-family:'Fira Code',monospace}
+.scale-item span{color:var(--text2)}
+.proj-desc{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:18px}
+.proj-impacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:18px}
+.impact-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.impact-icon{font-size:18px;margin-bottom:6px}
+.impact-title{font-size:11px;font-weight:600;color:var(--text);letter-spacing:.5px;margin-bottom:4px;text-transform:uppercase}
+.impact-body{font-size:12px;color:var(--text2);line-height:1.6}
+.proj-stack{display:flex;flex-wrap:wrap;gap:6px}
+.stack-tag{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:3px 9px;font-size:10px;color:var(--text3);font-family:'Fira Code',monospace;transition:all .2s}
+.stack-tag:hover{border-color:var(--accent);color:var(--accent)}
+.stack-tag.hl{border-color:rgba(245,197,24,0.3);color:var(--accent)}
+
+/* CERTS */
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.cert-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:all .2s}
+.cert-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cert-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.cert-issuer{font-size:12px;color:var(--accent);font-family:'Fira Code',monospace;margin-bottom:8px}
+.cert-date{font-size:11px;color:var(--text3)}
+.cert-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);text-decoration:none;margin-top:10px;transition:color .2s}
+.cert-link:hover{color:var(--accent)}
+
+/* SKILLS */
+.skills-layout{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.skill-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px}
+.skill-block-title{font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;font-family:'Fira Code',monospace;margin-bottom:14px}
+.skill-items{display:flex;flex-direction:column;gap:7px}
+.skill-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)}
+.skill-row::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.skill-row.active{color:var(--text)}
+.skill-row.active::before{background:var(--accent)}
+
+/* EDUCATION */
+.edu-stack{display:flex;flex-direction:column;gap:12px}
+.edu-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px;transition:border-color .2s}
+.edu-card:hover{border-color:var(--border2)}
+.edu-degree{font-size:16px;font-weight:600;margin-bottom:4px}
+.edu-school{font-size:13px;color:var(--accent);font-family:'Fira Code',monospace;margin-bottom:6px}
+.edu-detail{font-size:12px;color:var(--text3)}
+.edu-gpa{font-family:'Fira Code',monospace;font-size:20px;color:var(--accent);font-weight:700;white-space:nowrap}
+.edu-years{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+
+/* CONTACT */
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.contact-bio{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:24px}
+.contact-list{display:flex;flex-direction:column;gap:10px}
+.contact-item{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text2);font-size:14px;padding:10px 14px;border-radius:8px;border:1px solid var(--border);transition:all .2s}
+.contact-item:hover{border-color:var(--accent);color:var(--accent)}
+.contact-item-icon{width:34px;height:34px;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.contact-details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px}
+.contact-detail-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);padding:8px 0;border-bottom:1px solid var(--border);font-family:'Fira Code',monospace}
+.contact-detail-row:last-child{border-bottom:none}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:28px 32px;text-align:center}
+.footer-inner{max-width:1120px;margin:0 auto;font-size:12px;color:var(--text3);font-family:'Fira Code',monospace}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+@media(max-width:768px){
+  .about-layout,.contact-layout{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .exp-card-header{flex-direction:column}
+  .proj-meta-row{flex-direction:column}
+  .edu-card{flex-direction:column;align-items:flex-start}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">vikas.pabba()</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-status"><span class="status-dot"></span>Open to opportunities</div>
+    <h1 class="hero-name">Vikas<br><span class="accent">Pabba</span></h1>
+    <div class="hero-role">Data Engineer | 4+ Years | M.S. Computer Science</div>
+    <p class="hero-bio">I build production data pipelines and distributed systems — from ingestion to insight. With experience at HCL Technologies on Fortune 150 banking systems and AWS cloud platforms, I process millions of records daily with 99%+ data quality.</p>
+    <div class="hero-ctas">
+      <a href="#projects" class="cta cta-primary">View Projects</a>
+      <a href="resume.pdf" class="cta cta-outline">Download Resume</a>
+      <a href="#contact" class="cta cta-outline">Get In Touch</a>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ABOUT -->
+<div class="section-wrap" id="about">
+  <div class="section-eyebrow">About</div>
+  <div class="section-heading">Who I Am</div>
+  <div class="about-layout">
+    <div class="about-body">
+      <p>Data Engineer with 4+ years of experience building production data pipelines and distributed systems. Currently pursuing M.S. in Computer Science at Texas A&M University-Kingsville (GPA: 3.7/4.0).</p>
+      <p>Specialized in Apache Spark for distributed processing, Apache Kafka for real-time streaming, and Apache Airflow for workflow orchestration. Proven track record of processing millions of records with optimized performance and maintaining 99%+ data quality through automated validation frameworks.</p>
+      <p>Previously designed 10+ enterprise ETL pipelines at HCL Technologies for Fortune 150 banking operations — handling 1TB+ daily data volumes, 3M+ record migrations, and CDC/HVR replication with zero data loss.</p>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-box"><div class="metric-val">4+</div><div class="metric-lbl">Years Exp.</div></div>
+      <div class="metric-box"><div class="metric-val">3.7</div><div class="metric-lbl">GPA / 4.0</div></div>
+      <div class="metric-box"><div class="metric-val">12M+</div><div class="metric-lbl">Records/Day</div></div>
+      <div class="metric-box"><div class="metric-val">99%+</div><div class="metric-lbl">Data Quality</div></div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- EXPERIENCE -->
+<div class="section-wrap" id="experience">
+  <div class="section-eyebrow">Experience</div>
+  <div class="section-heading">Professional Journey</div>
+  <div class="exp-stack">
+
+    <!-- Websol -->
+    <div class="exp-card">
+      <div class="exp-card-header" onclick="toggleExp(this)">
+        <div class="exp-left">
+          <div class="exp-title">Software Engineer Intern</div>
+          <div class="exp-company">Websol.ai · Remote</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-date">Aug 2025 – Present</div>
+          <span class="exp-toggle">+</span>
+        </div>
+      </div>
+      <div class="exp-kpis">
+        <div class="kpi"><span class="kpi-val">50K+</span><div class="kpi-lbl">Records/Day</div></div>
+        <div class="kpi"><span class="kpi-val">99.9%</span><div class="kpi-lbl">Uptime</div></div>
+        <div class="kpi"><span class="kpi-val">&lt;200ms</span><div class="kpi-lbl">p99 Latency</div></div>
+        <div class="kpi"><span class="kpi-val">60%</span><div class="kpi-lbl">DB Speedup</div></div>
+      </div>
+      <div class="exp-body">
+        <div class="exp-bullets">
+          <div class="exp-bullet">Architected production data pipelines using <strong>Apache Spark on AWS EMR</strong> processing 50K+ daily records with 99.9% uptime</div>
+          <div class="exp-bullet">Built RESTful APIs with <strong>Spring Boot</strong> serving 10K+ requests/day with p99 latency &lt;200ms using SOLID principles and Resilience4j</div>
+          <div class="exp-bullet">Implemented real-time streaming with <strong>Apache Kafka</strong> & Apache Airflow orchestration with exactly-once-semantics</div>
+          <div class="exp-bullet">Optimized PostgreSQL queries by <strong>60%</strong> through indexing, query rewriting, and materialized views</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">Apache Spark</span><span class="exp-tag">AWS EMR</span><span class="exp-tag">Kafka</span><span class="exp-tag">Airflow</span><span class="exp-tag">Spring Boot</span><span class="exp-tag">PostgreSQL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAMUK -->
+    <div class="exp-card">
+      <div class="exp-card-header" onclick="toggleExp(this)">
+        <div class="exp-left">
+          <div class="exp-title">Graduate Student & Research Assistant</div>
+          <div class="exp-company">Texas A&M University - Kingsville</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-date">Aug 2023 – May 2025</div>
+          <span class="exp-toggle">+</span>
+        </div>
+      </div>
+      <div class="exp-kpis">
+        <div class="kpi"><span class="kpi-val">3.7</span><div class="kpi-lbl">GPA / 4.0</div></div>
+        <div class="kpi"><span class="kpi-val">70%</span><div class="kpi-lbl">Query Speedup</div></div>
+        <div class="kpi"><span class="kpi-val">85%+</span><div class="kpi-lbl">Test Coverage</div></div>
+      </div>
+      <div class="exp-body">
+        <div class="exp-bullets">
+          <div class="exp-bullet">Completed M.S. in Computer Science (GPA: 3.7/4.0) specializing in <strong>Big Data Analytics and Distributed Systems</strong></div>
+          <div class="exp-bullet">Conducted research on Spark optimization achieving <strong>70% query performance improvement</strong> through custom partitioning</div>
+          <div class="exp-bullet">Built production projects with <strong>Airflow DAGs, Kafka streaming</strong>, and Kubernetes auto-scaling on AWS</div>
+          <div class="exp-bullet">Achieved <strong>85%+ test coverage</strong> with comprehensive testing frameworks</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">Apache Spark</span><span class="exp-tag">Kafka</span><span class="exp-tag">Kubernetes</span><span class="exp-tag">AWS</span><span class="exp-tag">Python</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HCL -->
+    <div class="exp-card">
+      <div class="exp-card-header" onclick="toggleExp(this)">
+        <div class="exp-left">
+          <div class="exp-title">Data Engineer</div>
+          <div class="exp-company">HCL Technologies · Chennai, India</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-date">Jul 2021 – Jul 2023</div>
+          <span class="exp-toggle">+</span>
+        </div>
+      </div>
+      <div class="exp-kpis">
+        <div class="kpi"><span class="kpi-val">3M+</span><div class="kpi-lbl">Records Migrated</div></div>
+        <div class="kpi"><span class="kpi-val">1TB+</span><div class="kpi-lbl">Daily Volume</div></div>
+        <div class="kpi"><span class="kpi-val">45%</span><div class="kpi-lbl">Batch Speedup</div></div>
+        <div class="kpi"><span class="kpi-val">98%+</span><div class="kpi-lbl">DQ Score</div></div>
+      </div>
+      <div class="exp-body">
+        <div class="exp-bullets">
+          <div class="exp-bullet">Designed <strong>10+ enterprise ETL pipelines</strong> using IBM DataStage and Apache Spark for Fortune 150 banking operations</div>
+          <div class="exp-bullet">Led migration of <strong>3M+ banking records</strong> with zero data loss and full regulatory compliance using CDC/HVR</div>
+          <div class="exp-bullet">Optimized batch jobs by <strong>45%</strong> through parallel processing and Spark tuning on Hadoop clusters (1TB+ daily volumes)</div>
+          <div class="exp-bullet">Built PySpark transformations with <strong>98%+ data quality</strong>, reducing incident resolution time by 30%</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">IBM DataStage</span><span class="exp-tag">CDC/HVR</span><span class="exp-tag">PySpark</span><span class="exp-tag">Hadoop</span><span class="exp-tag">SQL</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- PROJECTS -->
+<div class="section-wrap" id="projects">
+  <div class="section-eyebrow">Projects</div>
+  <div class="section-heading">What I've Built</div>
+  <div class="proj-filter">
+    <button class="filter-btn active" onclick="filterProj('all',this)">All</button>
+    <button class="filter-btn" onclick="filterProj('de',this)">Data Engineering</button>
+    <button class="filter-btn" onclick="filterProj('ml',this)">ML / Analytics</button>
+  </div>
+  <div class="proj-grid">
+
+    <!-- IMDb Project -->
+    <div class="proj-card new-project" data-cat="de">
+      <div class="proj-top">
+        <div class="proj-meta-row">
+          <div class="proj-title-block">
+            <div class="proj-title">🎬 IMDb Media Data <em>ETL Pipeline</em></div>
+            <div class="proj-domain">Media & Entertainment Analytics</div>
+          </div>
+          <div class="proj-badges">
+            <span class="new-badge">New</span>
+            <span class="proj-category-badge badge-de">Data Engineering</span>
+          </div>
+        </div>
+        <div class="proj-links-row">
+          <a href="https://github.com/Vikas54-7/imdb-aws-pipeline" target="_blank" class="proj-link primary">GitHub →</a>
+          <a href="imdb-architecture.html" class="proj-link">Architecture →</a>
+          <a href="https://datasets.imdbws.com/" target="_blank" class="proj-link">Dataset →</a>
+          <a href="#" class="proj-link">Dashboard →</a>
+        </div>
+        <div class="proj-scale">
+          <div class="scale-item">Dataset: <span>IMDb Non-Commercial Datasets</span></div>
+          <div class="scale-item">Scale: <span>12.3M titles · 339,781 clean movies · 100% DQ</span></div>
+        </div>
+        <p class="proj-desc">Production-grade AWS batch ETL pipeline processing 12.3M IMDb movie records daily. PySpark on EMR 7.2.0 distributes processing across cluster nodes — cleaning IMDb null placeholders, joining datasets, enforcing 4 data quality rules. Automated end-to-end with EventBridge daily scheduling, Lambda triggers, Glue Data Catalog, and Grafana dashboards.</p>
+        <div class="proj-impacts">
+          <div class="impact-card">
+            <div class="impact-icon">⚡</div>
+            <div class="impact-title">Distributed Processing</div>
+            <div class="impact-body">PySpark on EMR 7.2.0 (m5.xlarge × 2 nodes) processes 12.3M records in parallel. Snappy Parquet output 10x cheaper for Athena vs CSV.</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">🔄</div>
+            <div class="impact-title">Automated Orchestration</div>
+            <div class="impact-body">EventBridge cron (0 1 * * ? *) triggers Lambda daily at 1 AM UTC. Glue Crawler auto-updates schema. SNS alerts on completion.</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">📊</div>
+            <div class="impact-title">Analytics Layer</div>
+            <div class="impact-body">Athena serverless SQL on Parquet (~$0.001/query). Grafana 4-panel dashboard — top movies, genre trends, decade analysis, rating distributions.</div>
+          </div>
+        </div>
+        <div class="proj-stack">
+          <span class="stack-tag hl">Amazon EMR</span>
+          <span class="stack-tag hl">PySpark</span>
+          <span class="stack-tag hl">AWS Glue</span>
+          <span class="stack-tag hl">Athena</span>
+          <span class="stack-tag">S3</span>
+          <span class="stack-tag">EventBridge</span>
+          <span class="stack-tag">Lambda</span>
+          <span class="stack-tag">SNS</span>
+          <span class="stack-tag">Grafana</span>
+          <span class="stack-tag">Python</span>
+          <span class="stack-tag">boto3</span>
+          <span class="stack-tag">Parquet</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NYC Taxi -->
+    <div class="proj-card" data-cat="de">
+      <div class="proj-top">
+        <div class="proj-meta-row">
+          <div class="proj-title-block">
+            <div class="proj-title">🚕 NYC Taxi <em>Analytics Platform</em></div>
+            <div class="proj-domain">Transportation & Real-Time Analytics</div>
+          </div>
+          <div class="proj-badges">
+            <span class="proj-category-badge badge-de">Data Engineering</span>
+          </div>
+        </div>
+        <div class="proj-links-row">
+          <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" target="_blank" class="proj-link primary">GitHub →</a>
+          <a href="nyc-architecture.html" class="proj-link">Architecture →</a>
+          <a href="https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page" target="_blank" class="proj-link">Dataset →</a>
+          <a href="https://public.tableau.com/views/NYCTaxiAnalytics-VikasPabba/Dashboard1" target="_blank" class="proj-link">Tableau →</a>
+        </div>
+        <div class="proj-scale">
+          <div class="scale-item">Dataset: <span>NYC TLC Official Trip Records (Jan–Mar 2024)</span></div>
+          <div class="scale-item">Scale: <span>9.2M trips · $253M revenue · 160MB parquet</span></div>
+        </div>
+        <p class="proj-desc">Production-grade data platform processing 9.2 million NYC taxi trips with real-time streaming, workflow orchestration, and OLAP analytics. Built end-to-end pipeline demonstrating distributed systems, message queuing, and high-performance analytical queries achieving sub-100ms response times.</p>
+        <div class="proj-impacts">
+          <div class="impact-card">
+            <div class="impact-icon">⚡</div>
+            <div class="impact-title">Real-Time Streaming</div>
+            <div class="impact-body">Apache Kafka producer/consumer with 57 messages/sec throughput for continuous trip data ingestion from parquet files.</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">🔄</div>
+            <div class="impact-title">Workflow Orchestration</div>
+            <div class="impact-body">Airflow DAG managing complete ETL pipeline, daily @ 6 AM UTC, 99%+ success rate across task dependencies.</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">📊</div>
+            <div class="impact-title">OLAP Analytics</div>
+            <div class="impact-body">DuckDB columnar queries — $253M revenue, peak hours (6PM = 666K trips), JFK 800K trips — sub-100ms response.</div>
+          </div>
+        </div>
+        <div class="proj-stack">
+          <span class="stack-tag hl">Apache Kafka</span>
+          <span class="stack-tag hl">Apache Airflow</span>
+          <span class="stack-tag">DuckDB</span>
+          <span class="stack-tag">Python</span>
+          <span class="stack-tag">Docker</span>
+          <span class="stack-tag">Pandas</span>
+          <span class="stack-tag">Flask</span>
+          <span class="stack-tag">Chart.js</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales Analytics -->
+    <div class="proj-card" data-cat="de ml">
+      <div class="proj-top">
+        <div class="proj-meta-row">
+          <div class="proj-title-block">
+            <div class="proj-title">💼 Sales Analytics <em>Engine</em></div>
+            <div class="proj-domain">E-Commerce & Business Intelligence</div>
+          </div>
+          <div class="proj-badges">
+            <span class="proj-category-badge badge-de">Data Engineering</span>
+            <span class="proj-category-badge badge-ml">Analytics</span>
+          </div>
+        </div>
+        <div class="proj-links-row">
+          <a href="https://github.com/Vikas54-7/sales-analytics-engine" target="_blank" class="proj-link primary">GitHub →</a>
+          <a href="sales-analytics-architecture.html" class="proj-link">Architecture →</a>
+          <a href="sales-analytics-dashboard.html" class="proj-link">Dashboard →</a>
+          <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" target="_blank" class="proj-link">Dataset →</a>
+        </div>
+        <div class="proj-scale">
+          <div class="scale-item">Dataset: <span>Brazilian E-Commerce Marketplace</span></div>
+          <div class="scale-item">Scale: <span>99,441 orders · Distributed Spark processing</span></div>
+        </div>
+        <p class="proj-desc">Production-grade data processing platform combining Apache Spark for distributed ETL transformations and Spring Boot for RESTful API services. Processes 99K+ sales transactions with complex aggregations, window functions, and SQL optimization achieving sub-100ms API response times.</p>
+        <div class="proj-impacts">
+          <div class="impact-card">
+            <div class="impact-icon">⚡</div>
+            <div class="impact-title">Performance Tuning</div>
+            <div class="impact-body">Broadcast variables, repartitioning by customer_id, in-memory caching cut processing from 45s → 14.3s (68% improvement).</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">🔄</div>
+            <div class="impact-title">Backend Services</div>
+            <div class="impact-body">Spring Boot 3.5 REST API (Java 17) with 7 endpoints — CRUD, stats, top customers — all with &lt;100ms p99 latency.</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">📊</div>
+            <div class="impact-title">SQL Optimization</div>
+            <div class="impact-body">PostgreSQL 15 with indexes, materialized views, and JPA native queries achieving 60% query performance improvement.</div>
+          </div>
+        </div>
+        <div class="proj-stack">
+          <span class="stack-tag hl">Apache Spark</span>
+          <span class="stack-tag hl">Spring Boot</span>
+          <span class="stack-tag">PostgreSQL</span>
+          <span class="stack-tag">Docker</span>
+          <span class="stack-tag">Python</span>
+          <span class="stack-tag">Java</span>
+          <span class="stack-tag">SQL</span>
+          <span class="stack-tag">Hibernate</span>
+          <span class="stack-tag">Maven</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- SKILLS -->
+<div class="section-wrap" id="skills">
+  <div class="section-eyebrow">Skills</div>
+  <div class="section-heading">Technologies</div>
+  <div class="skills-layout">
+    <div class="skill-block">
+      <div class="skill-block-title">Big Data & Streaming</div>
+      <div class="skill-items">
+        <div class="skill-row active">Apache Spark (PySpark, Scala)</div>
+        <div class="skill-row active">Apache Kafka</div>
+        <div class="skill-row active">Apache Airflow</div>
+        <div class="skill-row active">Hadoop</div>
+        <div class="skill-row">Delta Lake</div>
+      </div>
+    </div>
+    <div class="skill-block">
+      <div class="skill-block-title">AWS Cloud</div>
+      <div class="skill-items">
+        <div class="skill-row active">Amazon EMR</div>
+        <div class="skill-row active">AWS Glue + Catalog</div>
+        <div class="skill-row active">Amazon Athena</div>
+        <div class="skill-row active">Amazon S3</div>
+        <div class="skill-row active">Lambda + EventBridge</div>
+      </div>
+    </div>
+    <div class="skill-block">
+      <div class="skill-block-title">Programming</div>
+      <div class="skill-items">
+        <div class="skill-row active">Python</div>
+        <div class="skill-row active">Scala</div>
+        <div class="skill-row active">Java</div>
+        <div class="skill-row active">SQL</div>
+        <div class="skill-row active">PySpark</div>
+      </div>
+    </div>
+    <div class="skill-block">
+      <div class="skill-block-title">Databases</div>
+      <div class="skill-items">
+        <div class="skill-row active">PostgreSQL</div>
+        <div class="skill-row active">DuckDB</div>
+        <div class="skill-row">BigQuery</div>
+        <div class="skill-row active">SQL Optimization</div>
+      </div>
+    </div>
+    <div class="skill-block">
+      <div class="skill-block-title">Backend & APIs</div>
+      <div class="skill-items">
+        <div class="skill-row active">Spring Boot</div>
+        <div class="skill-row active">Flask</div>
+        <div class="skill-row active">RESTful APIs</div>
+        <div class="skill-row">Microservices</div>
+        <div class="skill-row">Hibernate/JPA</div>
+      </div>
+    </div>
+    <div class="skill-block">
+      <div class="skill-block-title">DevOps & Tools</div>
+      <div class="skill-items">
+        <div class="skill-row active">Docker</div>
+        <div class="skill-row">Kubernetes</div>
+        <div class="skill-row active">Git & GitHub</div>
+        <div class="skill-row active">IBM DataStage</div>
+        <div class="skill-row active">CDC/HVR</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- EDUCATION -->
+<div class="section-wrap" id="education">
+  <div class="section-eyebrow">Education</div>
+  <div class="section-heading">Academic Background</div>
+  <div class="edu-stack">
+    <div class="edu-card">
+      <div>
+        <div class="edu-degree">M.S. in Computer and Information Sciences</div>
+        <div class="edu-school">Texas A&M University, Kingsville</div>
+        <div class="edu-detail">Advanced Database Systems · Big Data Analytics · Distributed Systems · Cloud Computing · Machine Learning</div>
+      </div>
+      <div style="text-align:right">
+        <div class="edu-gpa">3.7/4.0</div>
+        <div class="edu-years">Aug 2023 – May 2025</div>
+      </div>
+    </div>
+    <div class="edu-card">
+      <div>
+        <div class="edu-degree">B.Tech in Electronics and Communication Engineering</div>
+        <div class="edu-school">JNTU, India</div>
+      </div>
+      <div style="text-align:right">
+        <div class="edu-years">Aug 2017 – May 2021</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- CONTACT -->
+<div class="section-wrap" id="contact">
+  <div class="section-eyebrow">Contact</div>
+  <div class="section-heading">Get In Touch</div>
+  <div class="contact-layout">
+    <div>
+      <p class="contact-bio">I'm actively seeking opportunities in data engineering and distributed systems roles. Whether it's building scalable pipelines, optimizing Spark jobs, or architecting cloud data platforms — let's connect!</p>
+      <div class="contact-list">
+        <a href="mailto:pabba.vikas54@gmail.com" class="contact-item">
+          <div class="contact-item-icon">✉</div>pabba.vikas54@gmail.com
+        </a>
+        <a href="https://www.linkedin.com/in/pabbavikas/" target="_blank" class="contact-item">
+          <div class="contact-item-icon">in</div>linkedin.com/in/pabbavikas
+        </a>
+        <a href="https://github.com/Vikas54-7" target="_blank" class="contact-item">
+          <div class="contact-item-icon">⌥</div>github.com/Vikas54-7
+        </a>
+      </div>
+    </div>
+    <div class="contact-details">
+      <div class="contact-detail-row">📍 San Antonio, TX</div>
+      <div class="contact-detail-row">📞 (210) 873-7446</div>
+      <div class="contact-detail-row">🟢 Open to opportunities</div>
+      <div class="contact-detail-row">🎓 M.S. Computer Science</div>
+      <div class="contact-detail-row">💼 4+ years experience</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">© 2026 Vikas Pabba · Data Engineer · San Antonio, TX</div>
+</footer>
+
+<script>
+function toggleTheme(){
+  const html = document.documentElement;
+  const btn  = document.getElementById('themeBtn');
+  if(html.dataset.theme === 'dark'){
+    html.dataset.theme = 'light';
+    btn.textContent = '☀️';
+  } else {
+    html.dataset.theme = 'dark';
+    btn.textContent = '🌙';
+  }
+}
+
+function toggleExp(header){
+  const body   = header.nextElementSibling;
+  const toggle = header.querySelector('.exp-toggle');
+  // skip kpis row
+  const expBody = header.parentElement.querySelector('.exp-body');
+  if(expBody.classList.contains('open')){
+    expBody.classList.remove('open');
+    toggle.textContent = '+';
+  } else {
+    expBody.classList.add('open');
+    toggle.textContent = '−';
+  }
+}
+
+function filterProj(cat, btn){
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.proj-card').forEach(card => {
+    if(cat === 'all' || card.dataset.cat.includes(cat)){
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>
